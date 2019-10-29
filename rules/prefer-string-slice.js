@@ -10,7 +10,7 @@ const argumentsVariable = templates.spreadVariable();
 const substrCallTemplate = templates.template`${objectVariable}.substr(${argumentsVariable})`;
 const substringCallTemplate = templates.template`${objectVariable}.substring(${argumentsVariable})`;
 
-const isLiteralNumber = node => node.type === 'Literal' && typeof node.value === 'number';
+const isLiteralNumber = node => node.type === 'Literal' && typeof node.value === 'number'
 
 const getNumericValue = node => {
 	if (isLiteralNumber(node)) {
@@ -54,11 +54,11 @@ const getSubstrFixerArguments = (sourceCode, argumentNodes) => {
 	}
 
 	if (argumentNodes.every(node => isLiteralNumber(node))) {
-		const [firstValue, secondValue] = argumentNodes.map(({value}) => value);
+		const [firstValue, secondValue] = argumentNodes.map(({value}) => value)
 		return [
 			firstValue,
 			firstValue + secondValue
-		];
+		]
 	}
 
 	if (argumentNodes[0].type === 'Literal') {
