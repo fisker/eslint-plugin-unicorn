@@ -1,7 +1,7 @@
 {
 	"name": "eslint-config-unicorn-tester",
 	"dependencies": {
-		"@typescript-eslint/parser": "2.9.0",
+		"@typescript-eslint/parser": "2.14.0",
 		"babel-eslint": "^10.0.3",
 		"eslint": "^6.7.1",
 		"eslint-plugin-unicorn": "file:../../..",
