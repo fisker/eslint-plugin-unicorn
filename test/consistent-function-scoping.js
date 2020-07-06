@@ -117,16 +117,6 @@ ruleTester.run('consistent-function-scoping', rule, {
 				foo + bar;
 		`,
 		outdent`
-			const doFoo = () => {
-				return bar => bar;
-			}
-		`,
-		outdent`
-			function doFoo() {
-				return bar => bar;
-			}
-		`,
-		outdent`
 			const doFoo = foo => {
 				const doBar = bar => {
 					return foo + bar;
@@ -142,16 +132,6 @@ ruleTester.run('consistent-function-scoping', rule, {
 						return bar + foo;
 					}
 				}
-			}
-		`,
-		outdent`
-			function doFoo(foo) {
-				{
-					function doBar(bar) {
-						return bar;
-					}
-				}
-				return foo;
 			}
 		`,
 		outdent`
@@ -634,7 +614,36 @@ ruleTester.run('consistent-function-scoping', rule, {
 				)
 			`,
 			errors: [createError('function \'baz\'')]
-		}
+		},
+		{
+			code: outdent`
+				const doFoo = () => {
+					return bar => bar;
+				}
+			`,
+			errors: [createError('arrow function')]
+		},
+		{
+			code: outdent`
+				function doFoo() {
+					return bar => bar;
+				}
+			`,
+			errors: [createError('arrow function')]
+		},
+		{
+			code: outdent`
+				function doFoo(foo) {
+					{
+						function doBar(bar) {
+							return bar;
+						}
+					}
+					return foo;
+				}
+			`,
+			errors: [createError('function \'doBar\'')]
+		},
 	]
 });
 

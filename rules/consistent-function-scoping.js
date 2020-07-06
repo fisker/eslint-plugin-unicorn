@@ -124,13 +124,22 @@ function canMoveToUpperScope(node, scope) {
 		return false;
 	}
 
+	const referencesInParentScope = getReferences(parentScope);
 	const references = getReferences(scope);
+	const referencesInParentScopeButNotInFunction = referencesInParentScope.filter(reference => !references.includes(reference))
+	const variablesInParentScopeButNotInFunction = referencesInParentScopeButNotInFunction.map(({resolved}) => resolved);
+	const variables = references.map(({resolved}) => resolved);
 
-	return !references.some(reference => {
-		const variable = reference.resolved;
+
+	return !variables.some(variable => {
 		if (!variable) {
 return false
 		}
+
+		if (variablesInParentScopeButNotInFunction.includes(variable)) {
+			return true
+		}
+
 
 		const scope = variable.scope;
 
@@ -139,7 +148,7 @@ return false
 		if (variable.identifiers[0] === node.id) {
 			return false
 		}
-console.log(parentScope.upper.type)
+
 		return (scope === parentScope) || (scope === parentScope.upper && (parentScope.upper.type ==='for' || parentScope.upper.type ==='catch'));
 	});
 }
