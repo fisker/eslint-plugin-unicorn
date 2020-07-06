@@ -320,6 +320,17 @@ ruleTester.run('consistent-function-scoping', rule, {
 
 				inner();
 			}
+		`,
+		// #792
+		outdent`
+			export const myMap = new Map();
+
+			for (const value of values) {
+				const regexp = new RegExp(\`^\${value}\\/?$\`);
+				const match = href => regexp.test(href);
+
+				myMap.set(value, {value, regexp, match});
+			}
 		`
 	],
 	invalid: [
