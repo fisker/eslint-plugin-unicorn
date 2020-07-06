@@ -1,4 +1,5 @@
 'use strict';
+const {findVariable} = require('eslint-utils');
 const {getFunctionHeadLocation, getFunctionNameWithKind} = require('eslint-utils');
 const getDocumentationUrl = require('./utils/get-documentation-url');
 const getReferences = require('./utils/get-references');
@@ -10,12 +11,7 @@ const isSameScope = (scope1, scope2) =>
 
 function checkReferences(scope, parent, scopeManager) {
 	const hitReference = references => references.some(reference => {
-		let fromScope = reference.from
-		if (fromScope.type === 'block' && fromScope.upper && fromScope.upper.type === 'for') {
-			fromScope = fromScope.upper
-		}
-
-		if (isSameScope(parent, fromScope)) {
+		if (isSameScope(parent, reference.from)) {
 			return true;
 		}
 
@@ -90,12 +86,12 @@ const reactHooks = new Set([
 	'useLayoutEffect',
 	'useDebugValue'
 ]);
-const isReactHook = scope =>
-	scope.block &&
-	scope.block.parent &&
-	scope.block.parent.callee &&
-	scope.block.parent.callee.type === 'Identifier' &&
-	reactHooks.has(scope.block.parent.callee.name);
+const isReactHook = node =>
+	node &&
+	node.parent &&
+	node.parent.callee &&
+	node.parent.callee.type === 'Identifier' &&
+	reactHooks.has(node.parent.callee.name);
 
 const isArrowFunctionWithThis = scope =>
 	scope.type === 'function' &&
@@ -113,44 +109,39 @@ const isIife = node => node &&
 	node.parent.type === 'CallExpression' &&
 	node.parent.callee === node;
 
-function checkNode(node, scopeManager) {
-	const scope = scopeManager.acquire(node);
-
+function canMoveToUpperScope(node, scope) {
 	if (!scope || isArrowFunctionWithThis(scope)) {
-		return true;
+		return false;
 	}
+	const parentScope = scope.upper;
 
-	let parentNode = node.parent;
-	if (!parentNode) {
-		return true;
-	}
-
-	// Skip over junk like the block statement inside of a function declaration
-	// or the various pieces of an arrow function.
-
-	if (parentNode.type === 'VariableDeclarator') {
-		parentNode = parentNode.parent;
-	}
-
-	if (parentNode.type === 'VariableDeclaration') {
-		parentNode = parentNode.parent;
-	}
-
-	if (parentNode.type === 'BlockStatement') {
-		parentNode = parentNode.parent;
-	}
-
-	const parentScope = scopeManager.acquire(parentNode);
 	if (
-		!parentScope ||
 		parentScope.type === 'global' ||
-		isReactHook(parentScope) ||
-		isIife(parentNode)
+		parentScope.type === 'module' ||
+		isReactHook(parentScope.block) ||
+		isIife(parentScope.block)
 	) {
-		return true;
+		return false;
 	}
 
-	return checkReferences(scope, parentScope, scopeManager);
+	const references = getReferences(scope);
+
+	return !references.some(reference => {
+		const variable = reference.resolved;
+		if (!variable) {
+return false
+		}
+
+		const scope = variable.scope;
+
+
+		// TODO: fix this function self compare
+		if (variable.identifiers[0] === node.id) {
+			return false
+		}
+console.log(parentScope.upper.type)
+		return (scope === parentScope) || (scope === parentScope.upper && (parentScope.upper.type ==='for' || parentScope.upper.type ==='catch'));
+	});
 }
 
 const create = context => {
@@ -168,7 +159,7 @@ const create = context => {
 			hasJsx = true;
 		},
 		':matches(ArrowFunctionExpression, FunctionDeclaration):exit': node => {
-			if (!hasJsx && !checkNode(node, scopeManager)) {
+			if (!hasJsx && canMoveToUpperScope(node, context.getScope())) {
 				context.report({
 					node,
 					loc: getFunctionHeadLocation(node, sourceCode),

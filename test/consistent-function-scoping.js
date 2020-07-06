@@ -309,6 +309,35 @@ ruleTester.run('consistent-function-scoping', rule, {
 				eventEmitter.once('error', onError2);
 			};
 		`,
+		// `BlockStatement`
+		outdent`
+			for (const a of values) {
+				const b = 1;
+				const foo = () => a;
+				const bar = () => b;
+			}
+		`,
+		outdent`
+			for (const a in values) {
+				const b = 1;
+				const foo = () => a;
+				const bar = () => b;
+			}
+		`,
+		outdent`
+			for (let a = 0; a < 9; a ++) {
+				const b = 1;
+				const foo = () => a;
+				const bar = () => b;
+			}
+		`,
+		outdent`
+			try {} catch (a) {
+				const b = 1;
+				const foo = () => a;
+				const bar = () => b;
+			}
+		`,
 		// #586
 		outdent`
 			function outer(stream) {
