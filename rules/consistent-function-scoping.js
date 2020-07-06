@@ -10,7 +10,12 @@ const isSameScope = (scope1, scope2) =>
 
 function checkReferences(scope, parent, scopeManager) {
 	const hitReference = references => references.some(reference => {
-		if (isSameScope(parent, reference.from)) {
+		let fromScope = reference.from
+		if (fromScope.type === 'block' && fromScope.upper && fromScope.upper.type === 'for') {
+			fromScope = fromScope.upper
+		}
+
+		if (isSameScope(parent, fromScope)) {
 			return true;
 		}
 
