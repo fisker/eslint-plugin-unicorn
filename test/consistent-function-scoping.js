@@ -318,6 +318,23 @@ ruleTester.run('consistent-function-scoping', rule, {
 				const bar = () => b;
 			}
 		`,
+		// TODO: fix next two tests
+		// outdent`
+		// 	const a = 10;
+		// 	while (a--) {
+		// 		const b = 1;
+		// 		const foo = () => a;
+		// 		const bar = () => b;
+		// 	}
+		// `,
+		// outdent`
+		// 	const a = 10;
+		// 	do {
+		// 		const b = 1;
+		// 		const foo = () => a;
+		// 		const bar = () => b;
+		// 	} while (a--)
+		// `,
 		// #586
 		outdent`
 			function outer(stream) {
