@@ -57,10 +57,9 @@ function canMoveToUpperScope(node, scope) {
 		return false;
 	}
 
-	const referencesInParentScope = getReferences(parentScope);
 	const references = getReferences(scope);
-	const referencesInParentScopeButNotInFunction = referencesInParentScope.filter(reference => !references.includes(reference))
-	const variablesInParentScopeButNotInFunction = referencesInParentScopeButNotInFunction.map(({resolved}) => resolved);
+	const referencesInParentScope = [...new Set([...parentScope.variableScope.references, ...parentScope.references])];
+	const variablesInParentScope = referencesInParentScope.map(({resolved}) => resolved);
 	const variables = references.map(({resolved}) => resolved);
 
 	return !variables.some(variable => {
@@ -68,18 +67,16 @@ function canMoveToUpperScope(node, scope) {
 			return false
 		}
 
-		if (variablesInParentScopeButNotInFunction.includes(variable)) {
-			return true
-		}
-
-
-		const scope = variable.scope;
-
-
 		// TODO: fix this function self compare
 		if (variable.identifiers[0] === node.id) {
 			return false
 		}
+
+		if (variablesInParentScope.includes(variable)) {
+			return true
+		}
+
+		const scope = variable.scope;
 
 		return (scope === parentScope) || (scope === parentScope.upper && (parentScope.upper.type ==='for' || parentScope.upper.type ==='catch'));
 	});
