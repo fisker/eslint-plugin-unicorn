@@ -4,19 +4,22 @@ const getDocumentationUrl = require('./utils/get-documentation-url');
 const MESSAGE_ID = 'noObjectAsDefaultParameter';
 
 const objectParameterSelector = [
-	':function > AssignmentPattern.params',
-	'[left.type="Identifier"]',
+	':function',
+	'>',
+	'AssignmentPattern.params',
 	'[right.type="ObjectExpression"]',
-	'[right.properties.length>0]'
+	'[right.properties.length>0]',
+	'>',
+	'Identifier.left'
 ].join('');
 
 const create = context => {
 	return {
 		[objectParameterSelector]: node => {
 			context.report({
-				node: node.left,
+				node: node,
 				messageId: MESSAGE_ID,
-				data: {parameter: node.left.name}
+				data: {parameter: node.name}
 			});
 		}
 	};
