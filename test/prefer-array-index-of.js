@@ -67,8 +67,12 @@ test({
 		// Dynamical value
 		'foo.findIndex(x => x + "foo" === "foo" + x)',
 
-		// `x` is used
+		// Parameter is used
 		'foo.findIndex(x => x === "foo" + x)',
+		// FunctionName is used
+		'foo.findIndex(function fn(x) {return x === fn(x.a)})',
+		// `arguments` is used
+		'foo.findIndex(function fn(x) {return x === arguments.length})',
 
 		// Already valid case
 		'foo.indexOf(0)'
