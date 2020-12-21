@@ -2,6 +2,10 @@ import fs from 'fs';
 import path from 'path';
 import test from 'ava';
 import pify from 'pify';
+import globby from 'globby';
+import babelEslint from 'babel-eslint'
+import eslint from 'eslint'
+import eslintPluginEslintPluginUtils from 'eslint-plugin-eslint-plugin/lib/utils'
 import index from '..';
 
 let ruleFiles;
@@ -112,3 +116,14 @@ test('Every rule has valid meta.type', t => {
 		t.true(validTypes.includes(rule.meta.type), `${name} meta.type is not one of [${validTypes.join(', ')}]`);
 	}
 });
+
+test('Rules should write in the way that `eslint-plugin-eslint-plugin` can understand', async t => {
+	const rulesFile = await globby('rules/*.js', {absolute: true});
+	for (const file of rulesFile) {
+		const text = fs.readFileSync(file, 'utf8');
+		const {ast} = babelEslint.parseForESLint(text);
+		const sourceCode = new (eslint.SourceCode)(text, ast);
+		const info = eslintPluginEslintPluginUtils.getRuleInfo(ast, sourceCode.scopeManager)
+		t.not(info, null, `'eslint-plugin-eslint-plugin' can't get info from file '${file}'`);
+	}
+})

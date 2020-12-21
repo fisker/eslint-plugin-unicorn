@@ -95,7 +95,9 @@ const schema = [
 ];
 
 module.exports = {
-	create,
+	create(context) {
+		return create(context)
+	},
 	meta: {
 		type: 'suggestion',
 		docs: {
