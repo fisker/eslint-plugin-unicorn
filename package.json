@@ -79,7 +79,10 @@
 		"babel": true,
 		"files": [
 			"test/*.js"
-		]
+		],
+		"nonSemVerExperiments": {
+			"sharedWorkers": true
+		}
 	},
 	"nyc": {
 		"reporter": [
