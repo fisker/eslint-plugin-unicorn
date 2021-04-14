@@ -105,6 +105,7 @@ Configure it in `package.json`.
 			"unicorn/prefer-ternary": "off",
 			"unicorn/prefer-type-error": "error",
 			"unicorn/prevent-abbreviations": "error",
+			"unicorn/proper-object-iterable-methods": "error",
 			"unicorn/string-content": "off",
 			"unicorn/throw-new-error": "error"
 		}
@@ -195,6 +196,7 @@ Each rule has emojis denoting:
 | [prefer-ternary](docs/rules/prefer-ternary.md) | Prefer ternary expressions over simple `if-else` statements. | ✅ | 🔧 |
 | [prefer-type-error](docs/rules/prefer-type-error.md) | Enforce throwing `TypeError` in type checking conditions. | ✅ | 🔧 |
 | [prevent-abbreviations](docs/rules/prevent-abbreviations.md) | Prevent abbreviations. | ✅ | 🔧 |
+| [proper-object-iterable-methods](docs/rules/proper-object-iterable-methods.md) | Enforce proper methods when iterate through objects. | ✅ | 🔧 |
 | [string-content](docs/rules/string-content.md) | Enforce better string content. |  | 🔧 |
 | [throw-new-error](docs/rules/throw-new-error.md) | Require `new` when throwing an error. | ✅ | 🔧 |
 

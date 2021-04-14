@@ -115,6 +115,7 @@ module.exports = {
 				'unicorn/prefer-ternary': 'error',
 				'unicorn/prefer-type-error': 'error',
 				'unicorn/prevent-abbreviations': 'error',
+				'unicorn/proper-object-iterable-methods': 'error',
 				'unicorn/string-content': 'off',
 				'unicorn/throw-new-error': 'error'
 			}
