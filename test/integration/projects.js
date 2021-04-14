@@ -150,10 +150,36 @@ module.exports = [
 	// #1030
 	'https://github.com/astrofox-io/astrofox',
 	// #1075
-	'https://github.com/jaredLunde/masonic'
+	'https://github.com/jaredLunde/masonic',
 	// These two project use `decorator`, try to enable when we use `@babel/eslint-parser`
 	// 'https://github.com/untitled-labs/metabase-custom',
 	// 'https://github.com/TheThingsNetwork/lorawan-stack',
+	{
+		repository: 'https://github.com/prototypejs/prototype',
+		ignore: [
+			// This file is not in strict mode
+			'test/unit/tests/event_handler.test.js
+		]
+	},
+	'https://github.com/jquery/jquery',
+	{
+		repository: 'https://github.com/mootools/mootools-core',
+		ignore: [
+			// This file is not in strict mode
+			'build/test/test.js',
+			'Specs/Types/Number.js'
+		]
+	},
+	{
+		repository: 'https://github.com/yui/yui3',
+		ignore: [
+			// Generated code
+			'build/test/test-coverage.js',
+			// Invalid
+			'src/app/meta/app-transitions-test.js'
+		]
+	},
+	'https://github.com/dojo/dojo'
 ].map(project => {
 	if (typeof project === 'string') {
 		project = {repository: project};
