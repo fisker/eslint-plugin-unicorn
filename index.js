@@ -86,6 +86,7 @@ module.exports = {
 				'unicorn/prefer-array-flat-map': 'error',
 				'unicorn/prefer-array-index-of': 'error',
 				'unicorn/prefer-array-some': 'error',
+				'unicorn/prefer-at': 'error',
 				'unicorn/prefer-date-now': 'error',
 				'unicorn/prefer-default-parameters': 'error',
 				'unicorn/prefer-dom-node-append': 'error',
