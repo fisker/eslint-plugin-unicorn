@@ -4,9 +4,5 @@ module.exports = (node, value) => {
 		return false;
 	}
 
-	if (value === null) {
-		return node.raw === 'null';
-	}
-
-	return node.value === value;
+	return value === null ? node.raw === 'null' : node.value === value;
 };

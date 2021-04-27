@@ -47,11 +47,7 @@ const isAssignmentExpression = (node, name) => {
 
 	const lhs = node.expression.left;
 
-	if (!lhs.object || lhs.object.type !== 'ThisExpression') {
-		return false;
-	}
-
-	return lhs.property.name === name;
+	return !lhs.object || lhs.object.type !== 'ThisExpression' ? false : lhs.property.name === name;
 };
 
 const isPropertyDefinition = (node, name) => {
@@ -64,11 +60,7 @@ const isPropertyDefinition = (node, name) => {
 		return false;
 	}
 
-	if (key.type !== 'Identifier') {
-		return false;
-	}
-
-	return key.name === name;
+	return key.type !== 'Identifier' ? false : key.name === name;
 };
 
 const customErrorDefinition = (context, node) => {

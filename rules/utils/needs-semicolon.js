@@ -73,11 +73,7 @@ function needsSemicolon(tokenBefore, sourceCode, code) {
 		}
 
 		// `await`
-		if (value === 'await' && lastBlockNode && lastBlockNode.type === 'AwaitExpression') {
-			return false;
-		}
-
-		return true;
+		return !(value === 'await' && lastBlockNode && lastBlockNode.type === 'AwaitExpression');
 	}
 
 	return false;

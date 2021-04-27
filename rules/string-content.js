@@ -69,11 +69,7 @@ const create = context => {
 	};
 	const replacements = getReplacements(patterns);
 
-	if (replacements.length === 0) {
-		return {};
-	}
-
-	return {
+	return replacements.length === 0 ? {} : {
 		'Literal, TemplateElement': node => {
 			const {type, value, raw} = node;
 

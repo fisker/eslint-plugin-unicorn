@@ -64,11 +64,7 @@ const arraySliceCallSelector = [
 
 const isArrayLiteral = node => node.type === 'ArrayExpression';
 const isArrayLiteralHasTrailingComma = (node, sourceCode) => {
-	if (node.elements.length === 0) {
-		return false;
-	}
-
-	return isCommaToken(sourceCode.getLastToken(node, 1));
+	return node.elements.length === 0 ? false : isCommaToken(sourceCode.getLastToken(node, 1));
 };
 
 const getRangeAfterCalleeObject = (node, sourceCode) => {

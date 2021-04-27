@@ -173,11 +173,7 @@ function parseTodoMessage(todoString) {
 	// Check if have to skip colon
 	// @example "TODO [...]: message here"
 	const dropColon = afterArguments[0] === ':';
-	if (dropColon) {
-		return afterArguments.slice(1).trim();
-	}
-
-	return afterArguments;
+	return dropColon ? afterArguments.slice(1).trim() : afterArguments;
 }
 
 function reachedDate(past) {

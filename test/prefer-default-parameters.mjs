@@ -4,17 +4,13 @@ import {getTester} from './utils/test.mjs';
 const {test} = getTester(import.meta);
 
 const invalidTestCase = ({code, suggestions}) => {
-	if (!suggestions) {
-		return {
-			code,
-			output: code,
-			errors: [{
-				messageId: 'preferDefaultParameters'
-			}]
-		};
-	}
-
-	return {
+	return !suggestions ? {
+		code,
+		output: code,
+		errors: [{
+			messageId: 'preferDefaultParameters'
+		}]
+	} : {
 		code,
 		output: code,
 		errors: suggestions.map(suggestion => ({

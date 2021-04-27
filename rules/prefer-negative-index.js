@@ -75,12 +75,7 @@ const getLengthMemberExpression = node => {
 		return;
 	}
 
-	if (isLengthMemberExpression(left)) {
-		return left;
-	}
-
-	// Nested BinaryExpression
-	return getLengthMemberExpression(left);
+	return isLengthMemberExpression(left) ? left : getLengthMemberExpression(left);
 };
 
 const getRemoveAbleNode = (target, argument) => {

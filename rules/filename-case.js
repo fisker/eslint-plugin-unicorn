@@ -133,31 +133,19 @@ function englishishJoinWords(words) {
 		return words[0];
 	}
 
-	if (words.length === 2) {
-		return `${words[0]} or ${words[1]}`;
-	}
-
-	return `${words.slice(0, -1).join(', ')}, or ${words[words.length - 1]}`;
+	return words.length === 2 ? `${words[0]} or ${words[1]}` : `${words.slice(0, -1).join(', ')}, or ${words[words.length - 1]}`;
 }
 
 const create = context => {
 	const options = context.options[0] || {};
 	const chosenCases = getChosenCases(options);
 	const ignore = (options.ignore || []).map(item => {
-		if (item instanceof RegExp) {
-			return item;
-		}
-
-		return new RegExp(item, 'u');
+		return item instanceof RegExp ? item : new RegExp(item, 'u');
 	});
 	const chosenCasesFunctions = chosenCases.map(case_ => ignoreNumbers(cases[case_].fn));
 	const filenameWithExtension = context.getFilename();
 
-	if (filenameWithExtension === '<input>' || filenameWithExtension === '<text>') {
-		return {};
-	}
-
-	return {
+	return filenameWithExtension === '<input>' || filenameWithExtension === '<text>' ? {} : {
 		Program: node => {
 			const extension = path.extname(filenameWithExtension);
 			const filename = path.basename(filenameWithExtension, extension);

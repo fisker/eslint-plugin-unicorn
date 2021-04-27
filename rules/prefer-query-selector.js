@@ -70,22 +70,12 @@ const canBeFixed = node => {
 		return node.raw === 'null' || (typeof node.value === 'string' && Boolean(node.value.trim()));
 	}
 
-	if (node.type === 'TemplateLiteral') {
-		return (
-			node.expressions.length === 0 &&
-			node.quasis.some(templateElement => templateElement.value.cooked.trim())
-		);
-	}
-
-	return false;
+	return node.type === 'TemplateLiteral' ? (node.expressions.length === 0 &&
+			node.quasis.some(templateElement => templateElement.value.cooked.trim())) : false;
 };
 
 const hasValue = node => {
-	if (node.type === 'Literal') {
-		return node.value;
-	}
-
-	return true;
+	return node.type === 'Literal' ? node.value : true;
 };
 
 const fix = (node, identifierName, preferredSelector) => {

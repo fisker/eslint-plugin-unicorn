@@ -72,11 +72,7 @@ const isTypecheckingMemberExpression = (node, callExpression) => {
 		return true;
 	}
 
-	if (node.object.type === 'MemberExpression') {
-		return isTypecheckingMemberExpression(node.object, callExpression);
-	}
-
-	return false;
+	return node.object.type === 'MemberExpression' ? isTypecheckingMemberExpression(node.object, callExpression) : false;
 };
 
 const isTypecheckingExpression = (node, callExpression) => {

@@ -425,14 +425,8 @@ const isExportedIdentifier = identifier => {
 		return identifier.parent.parent.type === 'ExportNamedDeclaration';
 	}
 
-	if (
-		identifier.parent.type === 'TSTypeAliasDeclaration' &&
-		identifier.parent.id === identifier
-	) {
-		return identifier.parent.parent.type === 'ExportNamedDeclaration';
-	}
-
-	return false;
+	return identifier.parent.type === 'TSTypeAliasDeclaration' &&
+		identifier.parent.id === identifier ? identifier.parent.parent.type === 'ExportNamedDeclaration' : false;
 };
 
 const shouldFix = variable => {
@@ -463,15 +457,9 @@ const isDefaultOrNamespaceImportName = identifier => {
 		return true;
 	}
 
-	if (
-		identifier.parent.type === 'VariableDeclarator' &&
+	return Boolean(identifier.parent.type === 'VariableDeclarator' &&
 		identifier.parent.id === identifier &&
-		isStaticRequire(identifier.parent.init)
-	) {
-		return true;
-	}
-
-	return false;
+		isStaticRequire(identifier.parent.init));
 };
 
 const isClassVariable = variable => {
@@ -521,15 +509,9 @@ const shouldReportIdentifierAsProperty = identifier => {
 		return true;
 	}
 
-	if (
-		(identifier.parent.type === 'ClassProperty' || identifier.parent.type === 'PropertyDefinition') &&
+	return Boolean((identifier.parent.type === 'ClassProperty' || identifier.parent.type === 'PropertyDefinition') &&
 		identifier.parent.key === identifier &&
-		!identifier.parent.computed
-	) {
-		return true;
-	}
-
-	return false;
+		!identifier.parent.computed);
 };
 
 const isInternalImport = node => {

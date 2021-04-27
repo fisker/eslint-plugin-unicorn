@@ -31,21 +31,17 @@ const invalidTestCase = testCase => {
 		};
 	}
 
-	if (output) {
-		return {
-			code,
-			output,
-			options,
-			errors: [
-				{
-					messageId: ERROR_MESSAGE_ID,
-					suggestions: undefined
-				}
-			]
-		};
-	}
-
-	return {
+	return output ? {
+		code,
+		output,
+		options,
+		errors: [
+			{
+				messageId: ERROR_MESSAGE_ID,
+				suggestions: undefined
+			}
+		]
+	} : {
 		code,
 		output: code,
 		options,

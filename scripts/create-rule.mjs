@@ -81,11 +81,7 @@ function updateIndex(id) {
 					return 'Rule name is required.';
 				}
 
-				if (!/^[a-z-]+$/.test(value)) {
-					return 'Invalid rule name.';
-				}
-
-				return true;
+				return !/^[a-z-]+$/.test(value) ? 'Invalid rule name.' : true;
 			}
 		},
 		{
@@ -93,11 +89,7 @@ function updateIndex(id) {
 			name: 'description',
 			message: 'Rule description:',
 			validate(value) {
-				if (!value) {
-					return 'Rule description is required.';
-				}
-
-				return true;
+				return !value ? 'Rule description is required.' : true;
 			}
 		},
 		{

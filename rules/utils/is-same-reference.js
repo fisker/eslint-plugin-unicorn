@@ -62,11 +62,7 @@ function getStaticPropertyName(node) {
 		}
 
 		const staticResult = getStaticValue(property);
-		if (!staticResult) {
-			return;
-		}
-
-		return String(staticResult.value);
+		return !staticResult ? undefined : String(staticResult.value);
 	}
 }
 
@@ -88,11 +84,7 @@ function equalLiteralValue(left, right) {
 	}
 
 	// BigInt literal.
-	if (left.bigint || right.bigint) {
-		return left.bigint === right.bigint;
-	}
-
-	return left.value === right.value;
+	return left.bigint || right.bigint ? left.bigint === right.bigint : left.value === right.value;
 }
 
 /**
@@ -112,11 +104,7 @@ function isSameReference(left, right) {
 			return isSameReference(left.expression, right);
 		}
 
-		if (right.type === 'ChainExpression') {
-			return isSameReference(left, right.expression);
-		}
-
-		return false;
+		return right.type === 'ChainExpression' ? isSameReference(left, right.expression) : false;
 	}
 
 	switch (left.type) {

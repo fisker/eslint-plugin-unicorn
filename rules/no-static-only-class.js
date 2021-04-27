@@ -51,17 +51,11 @@ function isStaticMember(node) {
 	}
 
 	// TypeScript class
-	if (
-		isDeclare ||
+	return !(isDeclare ||
 		isReadonly ||
 		typeof accessibility !== 'undefined' ||
 		(Array.isArray(decorators) && decorators.length > 0) ||
-		key.type === 'TSPrivateIdentifier'
-	) {
-		return false;
-	}
-
-	return true;
+		key.type === 'TSPrivateIdentifier');
 }
 
 function * switchClassMemberToObjectProperty(node, sourceCode, fixer) {

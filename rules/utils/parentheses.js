@@ -27,11 +27,7 @@ Get all parentheses tokens around the node.
 function getParentheses(node, sourceCode) {
 	const count = getParenthesizedTimes(node, sourceCode);
 
-	if (count === 0) {
-		return [];
-	}
-
-	return [
+	return count === 0 ? [] : [
 		...sourceCode.getTokensBefore(node, {count, filter: isOpeningParenToken}),
 		...sourceCode.getTokensAfter(node, {count, filter: isClosingParenToken})
 	];

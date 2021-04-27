@@ -22,14 +22,10 @@ function renameIdentifier(identifier, name, fixer) {
 	}
 
 	// `typeAnnotation`
-	if (identifier.typeAnnotation) {
-		return fixer.replaceTextRange(
-			[identifier.range[0], identifier.typeAnnotation.range[0]],
-			`${name}${identifier.optional ? '?' : ''}`
-		);
-	}
-
-	return fixer.replaceText(identifier, name);
+	return identifier.typeAnnotation ? fixer.replaceTextRange(
+		[identifier.range[0], identifier.typeAnnotation.range[0]],
+		`${name}${identifier.optional ? '?' : ''}`
+	) : fixer.replaceText(identifier, name);
 }
 
 module.exports = renameIdentifier;

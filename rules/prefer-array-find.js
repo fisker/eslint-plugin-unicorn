@@ -136,11 +136,7 @@ const getDestructuringLeftAndRight = node => {
 		return node;
 	}
 
-	if (node.type === 'VariableDeclarator') {
-		return {left: node.id, right: node.init};
-	}
-
-	return {};
+	return node.type === 'VariableDeclarator' ? {left: node.id, right: node.init} : {};
 };
 
 function * fixDestructuring(node, source, fixer) {

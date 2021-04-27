@@ -41,11 +41,7 @@ const shouldFixBeforeUnload = (assignedExpression, nodeReturnsSomething) => {
 		return false;
 	}
 
-	if (assignedExpression.body.type !== 'BlockStatement') {
-		return false;
-	}
-
-	return !nodeReturnsSomething.get(assignedExpression);
+	return assignedExpression.body.type !== 'BlockStatement' ? false : !nodeReturnsSomething.get(assignedExpression);
 };
 
 const isClearing = node => {
@@ -53,11 +49,7 @@ const isClearing = node => {
 		return node.raw === 'null';
 	}
 
-	if (node.type === 'Identifier') {
-		return node.name === 'undefined';
-	}
-
-	return false;
+	return node.type === 'Identifier' ? node.name === 'undefined' : false;
 };
 
 const create = context => {

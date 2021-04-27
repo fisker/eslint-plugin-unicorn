@@ -148,11 +148,7 @@ function getFixFunction(callExpression, sourceCode, functionInfo) {
 			return false;
 		}
 
-		if (callback.body.type !== 'BlockStatement') {
-			return false;
-		}
-
-		return true;
+		return callback.body.type === 'BlockStatement';
 	};
 
 	function * removeCallbackParentheses(fixer) {
@@ -311,11 +307,7 @@ function isFixable(callExpression, sourceCode, {scope, functionInfo, allIdentifi
 		return false;
 	}
 
-	if (isFunctionSelfUsedInside(callback, callbackScope)) {
-		return false;
-	}
-
-	return true;
+	return !isFunctionSelfUsedInside(callback, callbackScope);
 }
 
 const ignoredObjects = [

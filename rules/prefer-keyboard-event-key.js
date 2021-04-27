@@ -140,12 +140,7 @@ const fix = node => fixer => {
 	// Either a meta key or a printable character
 	const keyCode = translateToKey[right.value] || String.fromCharCode(right.value);
 	// And if we recognize the `.keyCode`
-	if (!isRightValid || !keyCode) {
-		return;
-	}
-
-	// Apply fixes
-	return [
+	return !isRightValid || !keyCode ? undefined : [
 		fixer.replaceText(node, 'key'),
 		fixer.replaceText(right, quoteString(keyCode))
 	];
