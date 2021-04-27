@@ -33,11 +33,7 @@ function isFunctionSelfUsedInside(functionNode, functionScope) {
 		return true;
 	}
 
-	if (id && getReferences(functionScope, id).length > 0) {
-		return true;
-	}
-
-	return false;
+	return id && getReferences(functionScope, id).length > 0 ? true : false;
 }
 
 module.exports = isFunctionSelfUsedInside;

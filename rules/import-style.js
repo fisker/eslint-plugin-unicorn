@@ -112,11 +112,7 @@ const joinOr = words => {
 				return word;
 			}
 
-			if (index === (words.length - 2)) {
-				return word + ' or';
-			}
-
-			return word + ',';
+			return index === (words.length - 2) ? word + ' or' : word + ',';
 		})
 		.join(' ');
 };

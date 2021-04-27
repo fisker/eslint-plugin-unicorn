@@ -36,11 +36,7 @@ const getIndexIdentifierName = forStatement => {
 		return;
 	}
 
-	if (variableDeclarator.id.type !== 'Identifier') {
-		return;
-	}
-
-	return variableDeclarator.id.name;
+	return variableDeclarator.id.type !== 'Identifier' ? undefined : variableDeclarator.id.name;
 };
 
 const getStrictComparisonOperands = binaryExpression => {
@@ -83,30 +79,18 @@ const getArrayIdentifierNameFromBinaryExpression = (binaryExpression, indexIdent
 		return;
 	}
 
-	if (greater.property.name !== 'length') {
-		return;
-	}
-
-	return greater.object.name;
+	return greater.property.name !== 'length' ? undefined : greater.object.name;
 };
 
 const getArrayIdentifierName = (forStatement, indexIdentifierName) => {
 	const {test} = forStatement;
 
-	if (!test || test.type !== 'BinaryExpression') {
-		return;
-	}
-
-	return getArrayIdentifierNameFromBinaryExpression(test, indexIdentifierName);
+	return !test || test.type !== 'BinaryExpression' ? undefined : getArrayIdentifierNameFromBinaryExpression(test, indexIdentifierName);
 };
 
 const isLiteralOnePlusIdentifierWithName = (node, identifierName) => {
-	if (node && node.type === 'BinaryExpression' && node.operator === '+') {
-		return (isIdentifierWithName(node.left, identifierName) && isLiteralOne(node.right)) ||
-			(isIdentifierWithName(node.right, identifierName) && isLiteralOne(node.left));
-	}
-
-	return false;
+	return node && node.type === 'BinaryExpression' && node.operator === '+' ? (isIdentifierWithName(node.left, identifierName) && isLiteralOne(node.right)) ||
+			(isIdentifierWithName(node.right, identifierName) && isLiteralOne(node.left)) : false;
 };
 
 const checkUpdateExpression = (forStatement, indexIdentifierName) => {
@@ -148,14 +132,8 @@ const isOnlyArrayOfIndexVariableRead = (arrayReferences, indexIdentifierName) =>
 			return false;
 		}
 
-		if (
-			node.parent.type === 'AssignmentExpression' &&
-			node.parent.left === node
-		) {
-			return false;
-		}
-
-		return true;
+		return node.parent.type === 'AssignmentExpression' &&
+			node.parent.left === node ? false : true;
 	});
 };
 
@@ -176,14 +154,10 @@ const getRemovalRange = (node, sourceCode) => {
 
 	const index = declarationNode.declarations.indexOf(node);
 
-	if (index === 0) {
-		return [
+	return index === 0 ? [
 			node.range[0],
 			declarationNode.declarations[1].range[0]
-		];
-	}
-
-	return [
+		] : [
 		declarationNode.declarations[index - 1].range[1],
 		node.range[1]
 	];
@@ -235,11 +209,7 @@ const isIndexVariableUsedElsewhereInTheLoopBody = (indexVariable, bodyScope, arr
 			return true;
 		}
 
-		if (node.object.name !== arrayIdentifierName) {
-			return true;
-		}
-
-		return false;
+		return node.object.name !== arrayIdentifierName ? true : false;
 	});
 
 	return referencesOtherThanArrayAccess.length > 0;
@@ -343,11 +313,7 @@ const create = context => {
 			const elementReference = arrayReferences.find(reference => {
 				const node = reference.identifier.parent;
 
-				if (node.parent.type !== 'VariableDeclarator') {
-					return false;
-				}
-
-				return true;
+				return node.parent.type !== 'VariableDeclarator' ? false : true;
 			});
 			const elementNode = elementReference && elementReference.identifier.parent.parent;
 			const elementIdentifierName = elementNode && elementNode.id.name;

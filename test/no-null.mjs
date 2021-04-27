@@ -31,8 +31,7 @@ const invalidTestCase = testCase => {
 		};
 	}
 
-	if (output) {
-		return {
+	return output ? {
 			code,
 			output,
 			options,
@@ -42,10 +41,7 @@ const invalidTestCase = testCase => {
 					suggestions: undefined
 				}
 			]
-		};
-	}
-
-	return {
+		} : {
 		code,
 		output: code,
 		options,

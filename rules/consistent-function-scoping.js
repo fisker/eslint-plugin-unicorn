@@ -21,11 +21,7 @@ function checkReferences(scope, parent, scopeManager) {
 		const [definition] = resolved.defs;
 
 		// Skip recursive function name
-		if (definition && definition.type === 'FunctionName' && resolved.name === definition.name.name) {
-			return false;
-		}
-
-		return isSameScope(parent, resolved.scope);
+		return definition && definition.type === 'FunctionName' && resolved.name === definition.name.name ? false : isSameScope(parent, resolved.scope);
 	});
 
 	const hitDefinitions = definitions => definitions.some(definition => {
@@ -58,13 +54,7 @@ function checkReferences(scope, parent, scopeManager) {
 		}
 
 		// Ignore identifiers from our own scope
-		if (isSameScope(scope, identifierParentScope)) {
-			return false;
-		}
-
-		// Look at the scope above the function definition to see if lives
-		// next to the reference being checked
-		return isSameScope(parent, identifierParentScope.upper);
+		return isSameScope(scope, identifierParentScope) ? false : isSameScope(parent, identifierParentScope.upper);
 	});
 
 	return getReferences(scope)
@@ -138,16 +128,10 @@ function checkNode(node, scopeManager) {
 	}
 
 	const parentScope = scopeManager.acquire(parentNode);
-	if (
-		!parentScope ||
+	return !parentScope ||
 		parentScope.type === 'global' ||
 		isReactHook(parentScope) ||
-		isIife(parentNode)
-	) {
-		return true;
-	}
-
-	return checkReferences(scope, parentScope, scopeManager);
+		isIife(parentNode) ? true : checkReferences(scope, parentScope, scopeManager);
 }
 
 const create = context => {

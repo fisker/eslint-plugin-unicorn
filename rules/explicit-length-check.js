@@ -79,9 +79,7 @@ function getLengthCheckNode(node) {
 	}
 
 	// Non-Zero length check
-	if (
-		// `foo.length !== 0`
-		isCompareRight(node, '!==', 0) ||
+	return isCompareRight(node, '!==', 0) ||
 		// `foo.length != 0`
 		isCompareRight(node, '!=', 0) ||
 		// `foo.length > 0`
@@ -95,12 +93,7 @@ function getLengthCheckNode(node) {
 		// `0 < foo.length`
 		isCompareLeft(node, '<', 0) ||
 		// `1 <= foo.length`
-		isCompareLeft(node, '<=', 1)
-	) {
-		return {isZeroLengthCheck: false, node};
-	}
-
-	return {};
+		isCompareLeft(node, '<=', 1) ? {isZeroLengthCheck: false, node} : {};
 }
 
 function create(context) {

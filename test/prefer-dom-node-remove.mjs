@@ -8,8 +8,7 @@ const ERROR_MESSAGE_ID = 'error';
 const SUGGESTION_MESSAGE_ID = 'suggestion';
 
 const invalidTestCase = ({code, output, suggestionOutput}) => {
-	if (suggestionOutput) {
-		return {
+	return suggestionOutput ? {
 			code,
 			output: code,
 			errors: [
@@ -23,10 +22,7 @@ const invalidTestCase = ({code, output, suggestionOutput}) => {
 					]
 				}
 			]
-		};
-	}
-
-	return {
+		} : {
 		code,
 		output,
 		errors: [

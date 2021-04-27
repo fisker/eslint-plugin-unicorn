@@ -62,11 +62,7 @@ const propertyKeysEqual = (keyA, keyB) => {
 
 const objectPatternMatchesObjectExprPropertyKey = (pattern, key) => {
 	return pattern.properties.some(property => {
-		if (property.type === 'RestElement') {
-			return true;
-		}
-
-		return propertyKeysEqual(property.key, key);
+		return property.type === 'RestElement' ? true : propertyKeysEqual(property.key, key);
 	});
 };
 
@@ -77,11 +73,7 @@ const isLeafDeclaratorOrProperty = declaratorOrProperty => {
 		return true;
 	}
 
-	if (value.type !== 'ObjectExpression') {
-		return true;
-	}
-
-	return false;
+	return value.type !== 'ObjectExpression' ? true : false;
 };
 
 const isUnusedVariable = variable => {
@@ -95,11 +87,7 @@ const create = context => {
 			return property.key.name;
 		}
 
-		if (property.key.type === 'Literal') {
-			return property.key.value;
-		}
-
-		return context.getSource(property.key);
+		return property.key.type === 'Literal' ? property.key.value : context.getSource(property.key);
 	};
 
 	const checkProperty = (property, references, path) => {
@@ -136,50 +124,30 @@ const create = context => {
 					const {parent} = reference.identifier;
 
 					if (reference.init) {
-						if (
-							parent.type === 'VariableDeclarator' &&
+						return parent.type === 'VariableDeclarator' &&
 							parent.parent.type === 'VariableDeclaration' &&
-							parent.parent.parent.type === 'ExportNamedDeclaration'
-						) {
-							return {identifier: parent};
-						}
-
-						return;
+							parent.parent.parent.type === 'ExportNamedDeclaration' ? {identifier: parent} : undefined;
 					}
 
 					if (parent.type === 'MemberExpression') {
-						if (
-							isMemberExpressionAssignment(parent) ||
+						return isMemberExpressionAssignment(parent) ||
 							isMemberExpressionCall(parent) ||
 							isMemberExpressionComputedBeyondPrediction(parent) ||
-							propertyKeysEqual(parent.property, key)
-						) {
-							return {identifier: parent};
-						}
-
-						return;
+							propertyKeysEqual(parent.property, key) ? {identifier: parent} : undefined;
 					}
 
 					if (
 						parent.type === 'VariableDeclarator' &&
 						parent.id.type === 'ObjectPattern'
 					) {
-						if (objectPatternMatchesObjectExprPropertyKey(parent.id, key)) {
-							return {identifier: parent};
-						}
-
-						return;
+						return objectPatternMatchesObjectExprPropertyKey(parent.id, key) ? {identifier: parent} : undefined;
 					}
 
 					if (
 						parent.type === 'AssignmentExpression' &&
 						parent.left.type === 'ObjectPattern'
 					) {
-						if (objectPatternMatchesObjectExprPropertyKey(parent.left, key)) {
-							return {identifier: parent};
-						}
-
-						return;
+						return objectPatternMatchesObjectExprPropertyKey(parent.left, key) ? {identifier: parent} : undefined;
 					}
 
 					return reference;

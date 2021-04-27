@@ -47,14 +47,8 @@ const create = context => {
 		const text = sourceCode.getText(node);
 		const before = sourceCode.getTokenBefore(node);
 		const after = sourceCode.getTokenAfter(node);
-		if (
-			(before && before.type === 'Punctuator' && before.value === '(') &&
-			(after && after.type === 'Punctuator' && after.value === ')')
-		) {
-			return `(${text})`;
-		}
-
-		return text;
+		return (before && before.type === 'Punctuator' && before.value === '(') &&
+			(after && after.type === 'Punctuator' && after.value === ')') ? `(${text})` : text;
 	};
 
 	return templates.visitor({

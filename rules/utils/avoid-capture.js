@@ -22,11 +22,7 @@ const someScopeHasVariableName = (name, scopes) => scopes.some(scope => resolveV
 const someScopeIsStrict = scopes => scopes.some(scope => scope.isStrict);
 
 const nameCollidesWithArgumentsSpecial = (name, scopes, isStrict) => {
-	if (name !== 'arguments') {
-		return false;
-	}
-
-	return isStrict || scopes.some(scope => scopeHasArgumentsSpecial(scope));
+	return name !== 'arguments' ? false : isStrict || scopes.some(scope => scopeHasArgumentsSpecial(scope));
 };
 
 /*

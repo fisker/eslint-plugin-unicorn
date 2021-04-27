@@ -15,12 +15,7 @@ function getPropertyName(node, scope) {
 	}
 
 	if (!computed) {
-		if (property.type === 'Identifier') {
-			return property.name;
-		}
-
-		/* istanbul ignore next: It could be `PrivateIdentifier`(ESTree) or `PrivateName`(Babel) when it's in `class` */
-		return;
+		return property.type === 'Identifier' ? property.name : undefined;
 	}
 
 	const result = getStaticValue(property, scope);

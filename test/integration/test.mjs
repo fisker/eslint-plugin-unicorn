@@ -63,11 +63,8 @@ const makeEslintTask = (project, destination) => {
 		} catch (error) {
 			console.error('Error while parsing eslint output:', error);
 
-			if (processError) {
-				throw processError;
-			}
-
-			throw error;
+			const error_ = processError ? processError : error;
+			throw error_;
 		}
 
 		for (const file of files) {

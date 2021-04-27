@@ -50,11 +50,7 @@ function isBooleanNode(node) {
 		return true;
 	}
 
-	if (isLogicalExpression(parent)) {
-		return isBooleanNode(parent);
-	}
-
-	return false;
+	return isLogicalExpression(parent) ? isBooleanNode(parent) : false;
 }
 
 /**
