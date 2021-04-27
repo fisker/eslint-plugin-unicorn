@@ -132,8 +132,8 @@ const isOnlyArrayOfIndexVariableRead = (arrayReferences, indexIdentifierName) =>
 			return false;
 		}
 
-		return node.parent.type === 'AssignmentExpression' &&
-			node.parent.left === node ? false : true;
+		return !(node.parent.type === 'AssignmentExpression' &&
+			node.parent.left === node);
 	});
 };
 
@@ -155,9 +155,9 @@ const getRemovalRange = (node, sourceCode) => {
 	const index = declarationNode.declarations.indexOf(node);
 
 	return index === 0 ? [
-			node.range[0],
-			declarationNode.declarations[1].range[0]
-		] : [
+		node.range[0],
+		declarationNode.declarations[1].range[0]
+	] : [
 		declarationNode.declarations[index - 1].range[1],
 		node.range[1]
 	];
@@ -209,7 +209,7 @@ const isIndexVariableUsedElsewhereInTheLoopBody = (indexVariable, bodyScope, arr
 			return true;
 		}
 
-		return node.object.name !== arrayIdentifierName ? true : false;
+		return node.object.name !== arrayIdentifierName;
 	});
 
 	return referencesOtherThanArrayAccess.length > 0;
@@ -313,7 +313,7 @@ const create = context => {
 			const elementReference = arrayReferences.find(reference => {
 				const node = reference.identifier.parent;
 
-				return node.parent.type !== 'VariableDeclarator' ? false : true;
+				return node.parent.type === 'VariableDeclarator';
 			});
 			const elementNode = elementReference && elementReference.identifier.parent.parent;
 			const elementIdentifierName = elementNode && elementNode.id.name;

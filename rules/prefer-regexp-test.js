@@ -72,9 +72,9 @@ const isRegExpNode = node => {
 		return true;
 	}
 
-	return node.type === 'NewExpression' &&
+	return Boolean(node.type === 'NewExpression' &&
 		node.callee.type === 'Identifier' &&
-		node.callee.name === 'RegExp' ? true : false;
+		node.callee.name === 'RegExp');
 };
 
 function getProblem(node, checkCase, context) {

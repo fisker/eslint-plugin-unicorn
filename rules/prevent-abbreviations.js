@@ -457,9 +457,9 @@ const isDefaultOrNamespaceImportName = identifier => {
 		return true;
 	}
 
-	return identifier.parent.type === 'VariableDeclarator' &&
+	return Boolean(identifier.parent.type === 'VariableDeclarator' &&
 		identifier.parent.id === identifier &&
-		isStaticRequire(identifier.parent.init) ? true : false;
+		isStaticRequire(identifier.parent.init));
 };
 
 const isClassVariable = variable => {
@@ -509,9 +509,9 @@ const shouldReportIdentifierAsProperty = identifier => {
 		return true;
 	}
 
-	return (identifier.parent.type === 'ClassProperty' || identifier.parent.type === 'PropertyDefinition') &&
+	return Boolean((identifier.parent.type === 'ClassProperty' || identifier.parent.type === 'PropertyDefinition') &&
 		identifier.parent.key === identifier &&
-		!identifier.parent.computed ? true : false;
+		!identifier.parent.computed);
 };
 
 const isInternalImport = node => {

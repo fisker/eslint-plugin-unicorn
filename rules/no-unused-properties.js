@@ -73,7 +73,7 @@ const isLeafDeclaratorOrProperty = declaratorOrProperty => {
 		return true;
 	}
 
-	return value.type !== 'ObjectExpression' ? true : false;
+	return value.type !== 'ObjectExpression';
 };
 
 const isUnusedVariable = variable => {

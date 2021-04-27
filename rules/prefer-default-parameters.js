@@ -74,7 +74,7 @@ const hasExtraReferences = (assignment, references, left) => {
 	}
 
 	// Old parameter is still referenced somewhere else
-	return !assignment && references.length > 1 ? true : false;
+	return Boolean(!assignment && references.length > 1);
 };
 
 const isLastParameter = (parameters, parameter) => {
@@ -112,9 +112,9 @@ const fixDefaultExpression = (fixer, source, node) => {
 	}
 
 	return endsWithWhitespace ? fixer.removeRange([
-			node.range[0],
-			node.range[1] + 1
-		]) : fixer.removeRange(node.range);
+		node.range[0],
+		node.range[1] + 1
+	]) : fixer.removeRange(node.range);
 };
 
 const create = context => {

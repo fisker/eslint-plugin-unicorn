@@ -5,12 +5,12 @@ const {test} = getTester(import.meta);
 
 const invalidTestCase = ({code, suggestions}) => {
 	return !suggestions ? {
-			code,
-			output: code,
-			errors: [{
-				messageId: 'preferDefaultParameters'
-			}]
-		} : {
+		code,
+		output: code,
+		errors: [{
+			messageId: 'preferDefaultParameters'
+		}]
+	} : {
 		code,
 		output: code,
 		errors: suggestions.map(suggestion => ({

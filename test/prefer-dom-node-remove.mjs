@@ -9,20 +9,20 @@ const SUGGESTION_MESSAGE_ID = 'suggestion';
 
 const invalidTestCase = ({code, output, suggestionOutput}) => {
 	return suggestionOutput ? {
-			code,
-			output: code,
-			errors: [
-				{
-					messageId: ERROR_MESSAGE_ID,
-					suggestions: [
-						{
-							messageId: SUGGESTION_MESSAGE_ID,
-							output: suggestionOutput
-						}
-					]
-				}
-			]
-		} : {
+		code,
+		output: code,
+		errors: [
+			{
+				messageId: ERROR_MESSAGE_ID,
+				suggestions: [
+					{
+						messageId: SUGGESTION_MESSAGE_ID,
+						output: suggestionOutput
+					}
+				]
+			}
+		]
+	} : {
 		code,
 		output,
 		errors: [

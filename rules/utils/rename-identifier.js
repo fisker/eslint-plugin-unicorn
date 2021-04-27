@@ -23,9 +23,9 @@ function renameIdentifier(identifier, name, fixer) {
 
 	// `typeAnnotation`
 	return identifier.typeAnnotation ? fixer.replaceTextRange(
-			[identifier.range[0], identifier.typeAnnotation.range[0]],
-			`${name}${identifier.optional ? '?' : ''}`
-		) : fixer.replaceText(identifier, name);
+		[identifier.range[0], identifier.typeAnnotation.range[0]],
+		`${name}${identifier.optional ? '?' : ''}`
+	) : fixer.replaceText(identifier, name);
 }
 
 module.exports = renameIdentifier;

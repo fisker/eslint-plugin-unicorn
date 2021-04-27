@@ -31,7 +31,7 @@ function shouldAddParenthesesToMemberExpressionObject(node, sourceCode) {
 			return !isNewExpressionWithParentheses(node, sourceCode);
 		case 'Literal': {
 			/* istanbul ignore next */
-			return isDecimalInteger(node) ? true : false;
+			return Boolean(isDecimalInteger(node));
 		}
 
 		default:

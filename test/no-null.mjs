@@ -32,16 +32,16 @@ const invalidTestCase = testCase => {
 	}
 
 	return output ? {
-			code,
-			output,
-			options,
-			errors: [
-				{
-					messageId: ERROR_MESSAGE_ID,
-					suggestions: undefined
-				}
-			]
-		} : {
+		code,
+		output,
+		options,
+		errors: [
+			{
+				messageId: ERROR_MESSAGE_ID,
+				suggestions: undefined
+			}
+		]
+	} : {
 		code,
 		output: code,
 		options,
