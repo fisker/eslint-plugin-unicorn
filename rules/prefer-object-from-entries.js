@@ -4,6 +4,7 @@ const getDocumentationUrl = require('./utils/get-documentation-url');
 const {matches, methodCallSelector} = require('./selectors');
 const {getParentheses, getParenthesizedText} = require('./utils/parentheses');
 const {isNodeMatches, isNodeMatchesNameOrPath} = require('./utils/is-node-matches');
+const {getSiblings} = require('./utils/siblings');
 
 const MESSAGE_ID_REDUCE = 'reduce';
 const MESSAGE_ID_FUNCTION = 'function';
@@ -43,6 +44,20 @@ const createPropertySelector = path => {
 		`[${prefix}type="Property"]`,
 		`[${prefix}kind="init"]`,
 		`[${prefix}method!=true]`
+	].join('');
+};
+
+// `foo.bar = baz;`
+const createMemberAssignmentExpressionSelector => path => {
+	const prefix = path ? `${path}.` : '';
+	const prefix = path ? `${path}.` : '';
+	return [
+		`[${prefix}type="ExpressionStatement"]`,
+		`[${prefix}expression.type="AssignmentExpression"]`,
+		`[${prefix}expression.left.type="MemberExpression"]`,
+		`[${prefix}expression.left.computed!=false]`,
+		`[${prefix}expression.left.optional!=true]`,
+		`[${prefix}expression.left.object.type="Identifier"]`
 	].join('');
 };
 
@@ -95,6 +110,34 @@ const anyCall = [
 	'[arguments.length=1]',
 	'[arguments.0.type!="SpreadElement"]',
 	' > .callee'
+].join('');
+
+// - `{const,let,var} foo = {}`
+// - `{const,let,var} foo = Object.create(null)`
+const emptyObjectVariableSelector = [
+	'VariableDeclaration',
+	'[declarations.length=1]',
+	'[declarations.0.type="VariableDeclarator"]',
+	'[declarations.0.id.type="Identifier"]',
+	createEmptyObjectSelector('declarations.0.init')
+].join('');
+
+// - `for (…) foo.bar = baz;`
+// - `for (…) {foo.bar = baz;}`
+const createLoopBodySelector = path => {
+	const prefix = path ? `${path}.` : '';
+	return ;
+};
+const forOfSelector = [
+	'ForOfStatement',
+	matches([
+		createMemberAssignmentExpressionSelector('body'),
+		[
+			`[body.type="BlockStatement"]`,
+			'[body.length=1]',
+			createMemberAssignmentExpressionSelector('body.body.0')
+		].join('');
+	])
 ].join('');
 
 function fixReduceAssignOrSpread({sourceCode, node, property}) {
@@ -172,6 +215,12 @@ function fixReduceAssignOrSpread({sourceCode, node, property}) {
 	};
 }
 
+const getAssignmentExpression = forOfStatement => {
+	const {body} = forOfStatement;
+	const {expression} = body.type === 'ExpressionStatement' ? body : body.body[0];
+	return expression;
+};
+
 /** @param {import('eslint').Rule.RuleContext} context */
 function create(context) {
 	const {functions: configFunctions} = {
@@ -180,8 +229,54 @@ function create(context) {
 	};
 	const functions = [...configFunctions, ...lodashFromPairsFunctions];
 	const sourceCode = context.getSourceCode();
-	const listeners = {};
 	const arrayReduce = new Map();
+	const emptyObjectDeclarations = [];
+	const forOfStatements = [];
+	const listeners = {};
+
+	function getSiblingForOfStatement(declaration) {
+		const siblings = getSiblings(declaration, sourceCode);
+		const index = siblings.indexOf(declaration);
+		if (index === -1) {
+			return;
+		}
+		const siblingForOfStatements = siblings.slice(index + 1).filter(node => forOfStatements.includes(node));
+		if (siblingForOfStatements.length === 0) {
+			return;
+		}
+
+		const variable = context.getDeclaredVariables(declaration);
+		siblingForOfStatements = siblingForOfStatements.filter(forOfStatement => {
+			const assignment = getAssignmentExpression(forOfStatement);
+			const {object} = assignment.left;
+			return object.name === object.name && variable.references.includes(object)
+		});
+		if (siblingForOfStatements.length === 0) {
+			return;
+		}
+
+		const [firstForOfStatement] = siblingForOfStatements;
+
+		return {
+			node: firstForOfStatement,
+			isAbove: siblings.indexOf(firstForOfStatement) === index + 1
+		};
+	}
+
+	function checkEmptyObjectDeclaration(node) {
+		const {
+			node: forOfStatement,
+			isAbove
+		} = getSiblingForOfStatement(node) || {};
+
+		if (!forOfStatement) {
+			return;
+		}
+
+		function getKeyValue() {
+		}
+
+	}
 
 	for (const {selector, test, getProperty} of fixableArrayReduceCases) {
 		listeners[selector] = function (node) {
@@ -221,15 +316,8 @@ function create(context) {
 		}
 	};
 
-	listeners['Program:exit'] = function () {
-		for (const [node, fix] of arrayReduce.entries()) {
-			context.report({
-				node: node.callee.property,
-				messageId: MESSAGE_ID_REDUCE,
-				fix
-			});
-		}
-	};
+	listeners[emptyObjectVariableSelector] = node => emptyObjectDeclarations.push(node);
+	listeners[emptyObjectVariableSelector] = node => forOfStatements.push(node);
 
 	listeners[anyCall] = function (node) {
 		if (!isNodeMatches(node, functions)) {
@@ -243,6 +331,20 @@ function create(context) {
 			data: {functionName},
 			fix: fixer => fixer.replaceText(node, 'Object.fromEntries')
 		});
+	};
+
+	listeners['Program:exit'] = function () {
+		for (const [node, fix] of arrayReduce.entries()) {
+			context.report({
+				node: node.callee.property,
+				messageId: MESSAGE_ID_REDUCE,
+				fix
+			});
+		}
+
+		for (const node of emptyObjectDeclarations) {
+			checkEmptyObjectDeclarations(node);
+		}
 	};
 
 	return listeners;
