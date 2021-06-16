@@ -73,6 +73,7 @@ Configure it in `package.json`.
 			"unicorn/no-unreadable-array-destructuring": "error",
 			"unicorn/no-unsafe-regex": "off",
 			"unicorn/no-unused-properties": "off",
+			"unicorn/no-useless-interpolation": "error",
 			"unicorn/no-useless-undefined": "error",
 			"unicorn/no-zero-fractions": "error",
 			"unicorn/number-literal-case": "error",
@@ -176,6 +177,7 @@ Each rule has emojis denoting:
 | [no-unreadable-array-destructuring](docs/rules/no-unreadable-array-destructuring.md) | Disallow unreadable array destructuring. | ✅ | 🔧 |  |
 | [no-unsafe-regex](docs/rules/no-unsafe-regex.md) | Disallow unsafe regular expressions. |  |  |  |
 | [no-unused-properties](docs/rules/no-unused-properties.md) | Disallow unused object properties. |  |  |  |
+| [no-useless-interpolation](docs/rules/no-useless-interpolation.md) | Forbid useless interpolation in template strings. | ✅ | 🔧 |  |
 | [no-useless-undefined](docs/rules/no-useless-undefined.md) | Disallow useless `undefined`. | ✅ | 🔧 |  |
 | [no-zero-fractions](docs/rules/no-zero-fractions.md) | Disallow number literals with zero fractions or dangling dots. | ✅ | 🔧 |  |
 | [number-literal-case](docs/rules/number-literal-case.md) | Enforce proper case for numeric literals. | ✅ | 🔧 |  |

@@ -2,5 +2,6 @@
 
 module.exports = {
 	appendArgument: require('./append-argument.js'),
-	switchNewExpressionToCallExpression: require('./switch-new-expression-to-call-expression.js')
+	switchNewExpressionToCallExpression: require('./switch-new-expression-to-call-expression.js'),
+	replaceTemplateExpression: require('./replace-template-expression.js')
 };
