@@ -151,8 +151,20 @@ export default [
 	'https://github.com/astrofox-io/astrofox',
 	// #1075
 	'https://github.com/jaredLunde/masonic',
-	'https://github.com/untitled-labs/metabase-custom',
-	'https://github.com/TheThingsNetwork/lorawan-stack'
+	{
+		repository: 'https://github.com/untitled-labs/metabase-custom',
+		ignore: [
+			// This file use flow syntax
+			'flow-typed/styled-components.js'
+		]
+	},
+	{
+		repository: 'https://github.com/TheThingsNetwork/lorawan-stack',
+		ignore: [
+			// This file use decorators
+			'pkg/webui/components/breadcrumbs/context.js'
+		]
+	}
 ].map(project => {
 	if (typeof project === 'string') {
 		project = {repository: project};
