@@ -79,15 +79,13 @@ export default [
 			'build/**'
 		]
 	},
-	// This repo use `override` keyword which is not avaiable before TS4.3, temporary disable
-	// https://github.com/microsoft/vscode/pull/120690/files
-	// {
-	// 	repository: 'https://github.com/microsoft/vscode',
-	// 	ignore: [
-	// 		// This file use `'\033'`
-	// 		'build/**'
-	// 	]
-	// },
+	{
+		repository: 'https://github.com/microsoft/vscode',
+		ignore: [
+			// This file use `'\033'`
+			'build/**'
+		]
+	},
 	'https://github.com/ElemeFE/element',
 	'https://github.com/iview/iview',
 	'https://github.com/sindresorhus/create-dmg',
@@ -152,10 +150,9 @@ export default [
 	// #1030
 	'https://github.com/astrofox-io/astrofox',
 	// #1075
-	'https://github.com/jaredLunde/masonic'
-	// These two project use `decorator`, try to enable when we use `@babel/eslint-parser`
-	// 'https://github.com/untitled-labs/metabase-custom',
-	// 'https://github.com/TheThingsNetwork/lorawan-stack',
+	'https://github.com/jaredLunde/masonic',
+	'https://github.com/untitled-labs/metabase-custom',
+	'https://github.com/TheThingsNetwork/lorawan-stack'
 ].map(project => {
 	if (typeof project === 'string') {
 		project = {repository: project};
