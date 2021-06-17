@@ -154,15 +154,16 @@ export default [
 	{
 		repository: 'https://github.com/untitled-labs/metabase-custom',
 		ignore: [
-			// This file use flow syntax
-			'flow-typed/styled-components.js'
+			// These files use flow syntax
+			'flow-typed/styled-components.js',
+			'frontend/interfaces/*.js'
 		]
 	},
 	{
 		repository: 'https://github.com/TheThingsNetwork/lorawan-stack',
 		ignore: [
-			// This file use decorators
-			'pkg/webui/components/breadcrumbs/context.js'
+			// These files use decorators
+			'pkg/webui/components/*/context.js'
 		]
 	}
 ].map(project => {
