@@ -156,14 +156,15 @@ export default [
 		ignore: [
 			// These files use flow syntax
 			'flow-typed/styled-components.js',
-			'frontend/interfaces/*.js'
+			'frontend/interfaces/*.js',
+			'frontend/src/metabase-lib/**/*.js'
 		]
 	},
 	{
 		repository: 'https://github.com/TheThingsNetwork/lorawan-stack',
 		ignore: [
 			// These files use decorators
-			'pkg/webui/components/*/context.js'
+			'pkg/webui/components/**/*.js'
 		]
 	}
 ].map(project => {
