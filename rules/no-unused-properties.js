@@ -6,7 +6,7 @@ const messages = {
 };
 
 const getDeclaratorOrPropertyValue = declaratorOrProperty =>
-	declaratorOrProperty.init ||
+	declaratorOrProperty.init ??
 	declaratorOrProperty.value;
 
 const isMemberExpressionCall = memberExpression =>

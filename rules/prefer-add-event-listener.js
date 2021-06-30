@@ -61,8 +61,8 @@ const isClearing = node => {
 };
 
 const create = context => {
-	const options = context.options[0] || {};
-	const excludedPackages = new Set(options.excludedPackages || ['koa', 'sax']);
+	const options = context.options[0] ?? {};
+	const excludedPackages = new Set(options.excludedPackages ?? ['koa', 'sax']);
 	let isDisabled;
 
 	const nodeReturnsSomething = new WeakMap();
@@ -95,7 +95,7 @@ const create = context => {
 		},
 
 		ReturnStatement(node) {
-			codePathInfo.returnsSomething = codePathInfo.returnsSomething || Boolean(node.argument);
+			codePathInfo.returnsSomething = codePathInfo.returnsSomething ?? Boolean(node.argument);
 		},
 
 		'AssignmentExpression:exit'(node) {

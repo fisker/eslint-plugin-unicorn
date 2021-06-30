@@ -37,7 +37,7 @@ const isLengthProperty = node => (
 	node.property.name === 'length'
 );
 
-const isLikelyNumeric = node => isLiteralNumber(node) || isLengthProperty(node);
+const isLikelyNumeric = node => isLiteralNumber(node) ?? isLengthProperty(node);
 
 const create = context => {
 	const sourceCode = context.getSourceCode();

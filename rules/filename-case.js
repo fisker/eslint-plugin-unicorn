@@ -98,7 +98,7 @@ function fixFilename(words, caseFunctions, {leading, extension}) {
 
 const leadingUnderscoresRegex = /^(?<leading>_+)(?<tailing>.*)$/;
 function splitFilename(filename) {
-	const result = leadingUnderscoresRegex.exec(filename) || {groups: {}};
+	const result = leadingUnderscoresRegex.exec(filename) ?? {groups: {}};
 	const {leading = '', tailing = filename} = result.groups;
 
 	const words = [];
@@ -143,9 +143,9 @@ function englishishJoinWords(words) {
 }
 
 const create = context => {
-	const options = context.options[0] || {};
+	const options = context.options[0] ?? {};
 	const chosenCases = getChosenCases(options);
-	const ignore = (options.ignore || []).map(item => {
+	const ignore = (options.ignore ?? []).map(item => {
 		if (item instanceof RegExp) {
 			return item;
 		}

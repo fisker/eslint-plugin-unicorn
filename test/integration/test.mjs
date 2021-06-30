@@ -28,7 +28,7 @@ const enrichErrors = (packageName, cliArguments, f) => async (...arguments_) => 
 const makeEslintTask = (project, destination) => {
 	const arguments_ = [
 		'eslint',
-		project.path || '.',
+		project.path ?? '.',
 		'--fix-dry-run',
 		'--no-eslintrc',
 		'--ext',
@@ -90,7 +90,7 @@ const makeEslintTask = (project, destination) => {
 const getBranch = mem(async dirname => (await execa('git', ['branch', '--show-current'], {cwd: dirname})).stdout);
 
 const execute = project => {
-	const destination = project.location || path.join(dirname, 'fixtures', project.name);
+	const destination = project.location ?? path.join(dirname, 'fixtures', project.name);
 
 	return new Listr([
 		{

@@ -255,7 +255,7 @@ const isIndexVariableAssignedToInTheLoopBody = (indexVariable, bodyScope) => {
 const someVariablesLeakOutOfTheLoop = (forStatement, variables, forScope) => {
 	return variables.some(variable => {
 		return !variable.references.every(reference => {
-			return scopeContains(forScope, reference.from) ||
+			return scopeContains(forScope, reference.from) ??
 				nodeContains(forStatement, reference.identifier);
 		});
 	});
@@ -354,8 +354,8 @@ const create = context => {
 					const shouldGenerateIndex = isIndexVariableUsedElsewhereInTheLoopBody(indexVariable, bodyScope, arrayIdentifierName);
 
 					const index = indexIdentifierName;
-					const element = elementIdentifierName ||
-						avoidCapture(singular(arrayIdentifierName) || defaultElementName, getChildScopesRecursive(bodyScope), context.parserOptions.ecmaVersion);
+					const element = elementIdentifierName ??
+						avoidCapture(singular(arrayIdentifierName) ?? defaultElementName, getChildScopesRecursive(bodyScope), context.parserOptions.ecmaVersion);
 					const array = arrayIdentifierName;
 
 					let declarationElement = element;

@@ -134,7 +134,7 @@ function fixConcat(node, sourceCode, fixableArguments) {
 					text = `...${text}`;
 				}
 
-				return text || ' ';
+				return text ?? ' ';
 			})
 			.join(', ');
 
@@ -388,7 +388,7 @@ const create = context => {
 					fix: fixConcat(
 						node,
 						sourceCode,
-						node.arguments.map(node => getConcatArgumentSpreadable(node, scope) || {node, isSpreadable: true})
+						node.arguments.map(node => getConcatArgumentSpreadable(node, scope) ?? {node, isSpreadable: true})
 					)
 				});
 			}

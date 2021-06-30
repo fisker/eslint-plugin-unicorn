@@ -133,7 +133,7 @@ function * customErrorDefinition(context, node) {
 					yield fixer.insertTextAfterRange([
 						superExpression.range[0],
 						superExpression.range[0] + 6
-					], rhs.raw || rhs.name);
+					], rhs.raw ?? rhs.name);
 				}
 
 				yield fixer.removeRange([

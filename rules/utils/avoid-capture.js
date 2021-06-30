@@ -26,7 +26,7 @@ const nameCollidesWithArgumentsSpecial = (name, scopes, isStrict) => {
 		return false;
 	}
 
-	return isStrict || scopes.some(scope => scopeHasArgumentsSpecial(scope));
+	return isStrict ?? scopes.some(scope => scopeHasArgumentsSpecial(scope));
 };
 
 /*
@@ -47,7 +47,7 @@ function unicorn() {
 ```
 */
 const isUnresolvedName = (name, scopes) => scopes.some(scope =>
-	scope.references.some(reference => reference.identifier && reference.identifier.name === name && !reference.resolved) ||
+	scope.references.some(reference => reference.identifier && reference.identifier.name === name && !reference.resolved) ??
 	isUnresolvedName(name, scope.childScopes)
 );
 

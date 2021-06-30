@@ -33,7 +33,7 @@ function getEqualityComparisons(node) {
 
 function getCommonReferences(expressions, candidates) {
 	for (const {left, right} of expressions) {
-		candidates = candidates.filter(node => isSame(node, left) || isSame(node, right));
+		candidates = candidates.filter(node => isSame(node, left) ?? isSame(node, right));
 
 		if (candidates.length === 0) {
 			break;
