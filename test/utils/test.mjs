@@ -72,7 +72,7 @@ class Tester {
 
 	typescript(tests) {
 		const {testerOptions = {}} = tests;
-		testerOptions.parserOptions = testerOptions.parserOptions || {};
+		testerOptions.parserOptions = testerOptions.parserOptions ?? {};
 
 		return this.runTest({
 			...tests,
@@ -89,10 +89,10 @@ class Tester {
 
 	babel(tests) {
 		const {testerOptions = {}} = tests;
-		testerOptions.parserOptions = testerOptions.parserOptions || {};
-		testerOptions.parserOptions.babelOptions = testerOptions.parserOptions.babelOptions || {};
-		testerOptions.parserOptions.babelOptions.parserOpts = testerOptions.parserOptions.babelOptions.parserOpts || {};
-		let babelPlugins = testerOptions.parserOptions.babelOptions.parserOpts.plugins || [];
+		testerOptions.parserOptions = testerOptions.parserOptions ?? {};
+		testerOptions.parserOptions.babelOptions = testerOptions.parserOptions.babelOptions ?? {};
+		testerOptions.parserOptions.babelOptions.parserOpts = testerOptions.parserOptions.babelOptions.parserOpts ?? {};
+		let babelPlugins = testerOptions.parserOptions.babelOptions.parserOpts.plugins ?? [];
 		babelPlugins = [
 			['estree', {classFeatures: true}],
 			'jsx',

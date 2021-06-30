@@ -21,7 +21,7 @@ const importIndex = (context, node, argument) => {
 };
 
 const create = context => {
-	const options = context.options[0] || {};
+	const options = context.options[0] ?? {};
 
 	const rules = {
 		[STATIC_REQUIRE_SELECTOR]: node => importIndex(context, node, node.arguments[0])

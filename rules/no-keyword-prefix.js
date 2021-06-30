@@ -11,7 +11,7 @@ const prepareOptions = ({
 	onlyCamelCase = true
 } = {}) => {
 	return {
-		disallowedPrefixes: (disallowedPrefixes || [
+		disallowedPrefixes: (disallowedPrefixes ?? [
 			'new',
 			'class'
 		]),

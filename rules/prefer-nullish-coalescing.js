@@ -53,13 +53,7 @@ const create = context => {
 				node: operatorToken,
 				messageId: ERROR,
 				data: messageData,
-				suggest: [
-					{
-						messageId: SUGGESTION,
-						data: messageData,
-						fix: fixer => fixer.replaceText(operatorToken, replacementOperator)
-					}
-				]
+				fix: fixer => fixer.replaceText(operatorToken, replacementOperator)
 			};
 		}
 	};
@@ -73,6 +67,7 @@ module.exports = {
 			description: 'Prefer the nullish coalescing operator(`??`) over the logical OR operator(`||`).'
 		},
 		messages,
-		hasSuggestions: true
+		hasSuggestions: true,
+		fixable: 'code'
 	}
 };

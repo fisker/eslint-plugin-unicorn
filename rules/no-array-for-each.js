@@ -50,7 +50,7 @@ function shouldSwitchReturnStatementToBlockStatement(returnStatement) {
 
 	switch (parent.type) {
 		case 'IfStatement':
-			return parent.consequent === returnStatement || parent.alternate === returnStatement;
+			return parent.consequent === returnStatement ?? parent.alternate === returnStatement;
 
 		// These parent's body need switch to `BlockStatement` too, but since they are "continueAble", won't fix
 		// case 'ForStatement':
@@ -336,7 +336,7 @@ function isFixable(callExpression, {scope, functionInfo, allIdentifiers, context
 	const parameters = callback.params;
 	if (
 		!(parameters.length === 1 || parameters.length === 2) ||
-		parameters.some(({type, typeAnnotation}) => type === 'RestElement' || typeAnnotation) ||
+		parameters.some(({type, typeAnnotation}) => type === 'RestElement' ?? typeAnnotation) ||
 		!isFunctionParametersSafeToFix(callback, {scope, array: callExpression, allIdentifiers, context})
 	) {
 		return false;

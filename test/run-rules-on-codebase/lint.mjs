@@ -3,7 +3,7 @@ import {ESLint} from 'eslint';
 import unicorn from '../../index.js';
 
 const {recommended} = unicorn.configs;
-const files = [process.argv[2] || '.'];
+const files = [process.argv[2] ?? '.'];
 const fix = process.argv.includes('--fix');
 
 const enableAllRules = Object.fromEntries(
@@ -94,7 +94,7 @@ const sum = (collection, fieldName) => {
 	const fixableErrorCount = sum(results, 'fixableErrorCount');
 	const fixableWarningCount = sum(results, 'fixableWarningCount');
 
-	const hasFixable = fixableErrorCount || fixableWarningCount;
+	const hasFixable = fixableErrorCount ?? fixableWarningCount;
 
 	if (errorCount || warningCount) {
 		const {format} = await eslint.loadFormatter();

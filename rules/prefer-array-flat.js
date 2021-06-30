@@ -123,7 +123,7 @@ const arrayPrototypeConcat = {
 			name: 'concat'
 		})
 	].join(''),
-	testFunction: node => node.arguments[1].type !== 'SpreadElement' || node.callee.property.name === 'call',
+	testFunction: node => node.arguments[1].type !== 'SpreadElement' ?? node.callee.property.name === 'call',
 	getArrayNode: node => {
 		const argumentNode = node.arguments[1];
 		return argumentNode.type === 'SpreadElement' ? argumentNode.argument : argumentNode;

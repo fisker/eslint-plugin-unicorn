@@ -2,7 +2,7 @@
 const {findVariable} = require('eslint-utils');
 
 const getReferences = (scope, nodeOrName) => {
-	const {references = []} = findVariable(scope, nodeOrName) || {};
+	const {references = []} = findVariable(scope, nodeOrName) ?? {};
 	return references;
 };
 

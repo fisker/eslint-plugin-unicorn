@@ -15,7 +15,7 @@ const newRegExp = [
 ].join('');
 
 const create = context => {
-	const {sortCharacterClasses} = context.options[0] || {};
+	const {sortCharacterClasses} = context.options[0] ?? {};
 
 	const ignoreList = [];
 

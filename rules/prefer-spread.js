@@ -108,7 +108,7 @@ function fixConcat(node, sourceCode, fixableArguments) {
 
 	const getFixedText = () => {
 		const nonEmptyArguments = fixableArguments
-			.filter(({node, isArrayLiteral}) => (!isArrayLiteral || node.elements.length > 0));
+			.filter(({node, isArrayLiteral}) => (!isArrayLiteral ?? node.elements.length > 0));
 		const lastArgument = nonEmptyArguments[nonEmptyArguments.length - 1];
 
 		let text = nonEmptyArguments
@@ -134,7 +134,7 @@ function fixConcat(node, sourceCode, fixableArguments) {
 					text = `...${text}`;
 				}
 
-				return text || ' ';
+				return text ?? ' ';
 			})
 			.join(', ');
 
@@ -388,7 +388,7 @@ const create = context => {
 					fix: fixConcat(
 						node,
 						sourceCode,
-						node.arguments.map(node => getConcatArgumentSpreadable(node, scope) || {node, isSpreadable: true})
+						node.arguments.map(node => getConcatArgumentSpreadable(node, scope) ?? {node, isSpreadable: true})
 					)
 				});
 			}

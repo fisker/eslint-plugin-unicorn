@@ -87,7 +87,7 @@ function parseTodoWithArguments(string, {terms}) {
 function createArgumentGroup(arguments_) {
 	const groups = {};
 	for (const {value, type} of arguments_) {
-		groups[type] = groups[type] || [];
+		groups[type] = groups[type] ?? [];
 		groups[type].push(value);
 	}
 
@@ -226,7 +226,7 @@ function tryToCoerceVersion(rawVersion) {
 	try {
 		// Try to semver.parse a perfect match while semver.coerce tries to fix errors
 		// But coerce can't parse pre-releases.
-		return semver.parse(version) || semver.coerce(version);
+		return semver.parse(version) ?? semver.coerce(version);
 	} catch {
 		/* istanbul ignore next: We don't have this `package.json` to test */
 		return false;
@@ -420,7 +420,7 @@ const create = context => {
 			}
 		}
 
-		const packageEngines = packageJson.engines || {};
+		const packageEngines = packageJson.engines ?? {};
 
 		for (const engine of engines) {
 			uses++;

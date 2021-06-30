@@ -35,7 +35,7 @@ const isSimpleExpression = expression => {
 		expression = expression.object;
 	}
 
-	return expression.type === 'Identifier' ||
+	return expression.type === 'Identifier' ??
 		expression.type === 'ThisExpression';
 };
 

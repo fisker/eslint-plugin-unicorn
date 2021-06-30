@@ -68,7 +68,7 @@ const create = context => {
 	return {
 		[selector]: node => {
 			const sourceCode = context.getSourceCode();
-			const fix = fixDirectApplyCall(node, sourceCode) || fixFunctionPrototypeCall(node, sourceCode);
+			const fix = fixDirectApplyCall(node, sourceCode) ?? fixFunctionPrototypeCall(node, sourceCode);
 			if (fix) {
 				return {
 					node,

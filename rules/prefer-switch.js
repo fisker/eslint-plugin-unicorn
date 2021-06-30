@@ -8,7 +8,7 @@ const messages = {
 	[MESSAGE_ID]: 'Use `switch` instead of multiple `else-if`.'
 };
 
-const isSame = (nodeA, nodeB) => nodeA === nodeB || isSameReference(nodeA, nodeB);
+const isSame = (nodeA, nodeB) => nodeA === nodeB ?? isSameReference(nodeA, nodeB);
 
 function getEqualityComparisons(node) {
 	const nodes = [node];
@@ -33,7 +33,7 @@ function getEqualityComparisons(node) {
 
 function getCommonReferences(expressions, candidates) {
 	for (const {left, right} of expressions) {
-		candidates = candidates.filter(node => isSame(node, left) || isSame(node, right));
+		candidates = candidates.filter(node => isSame(node, left) ?? isSame(node, right));
 
 		if (candidates.length === 0) {
 			break;
@@ -172,7 +172,7 @@ function shouldInsertBreakStatement(node) {
 
 		case 'BlockStatement': {
 			const lastNode = getBlockStatementLastNode(node);
-			return !lastNode || shouldInsertBreakStatement(lastNode);
+			return !lastNode ?? shouldInsertBreakStatement(lastNode);
 		}
 
 		default:
