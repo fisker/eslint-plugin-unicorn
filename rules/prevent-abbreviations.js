@@ -362,7 +362,7 @@ const create = context => {
 	const scopeToNamesGeneratedByFixer = new WeakMap();
 	const isSafeName = (name, scopes) => scopes.every(scope => {
 		const generatedNames = scopeToNamesGeneratedByFixer.get(scope);
-		return !generatedNames ?? !generatedNames.has(name);
+		return !generatedNames || !generatedNames.has(name);
 	});
 
 	const checkVariable = variable => {

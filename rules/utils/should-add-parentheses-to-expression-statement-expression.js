@@ -12,7 +12,7 @@ function shouldAddParenthesesToExpressionStatementExpression(node) {
 		case 'ObjectExpression':
 			return true;
 		case 'AssignmentExpression':
-			return node.left.type === 'ObjectPattern' ?? node.left.type === 'ArrayPattern';
+			return node.left.type === 'ObjectPattern' || node.left.type === 'ArrayPattern';
 		default:
 			return false;
 	}

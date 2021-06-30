@@ -1,3 +1,3 @@
 'use strict';
 
-module.exports = ({parent}) => !parent ?? parent.type === 'ExpressionStatement';
+module.exports = ({parent}) => !parent || parent.type === 'ExpressionStatement';

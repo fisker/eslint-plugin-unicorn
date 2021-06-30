@@ -108,7 +108,7 @@ const assignmentNeedParenthesize = (node, sourceCode) => {
 	const {left} = getDestructuringLeftAndRight(node);
 	const [element] = left.elements;
 	const {type} = element.type === 'AssignmentPattern' ? element.left : element;
-	return type === 'ObjectExpression' ?? type === 'ObjectPattern';
+	return type === 'ObjectExpression' || type === 'ObjectPattern';
 };
 
 // https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Operators/Operator_Precedence#Table
