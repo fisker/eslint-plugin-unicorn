@@ -3,7 +3,7 @@ const {newExpressionSelector} = require('./selectors/index.js');
 
 const MESSAGE_ID = 'prefer-type-error';
 const messages = {
-	[MESSAGE_ID]: '`new Error()` is too unspecific for a type check. Use `new TypeError()` instead.'
+	[MESSAGE_ID]: '`new Error()` is too unspecific for a type check. Use `new TypeError()` instead.',
 };
 
 const tcIdentifiers = new Set([
@@ -43,27 +43,27 @@ const tcIdentifiers = new Set([
 	'isWeakMap',
 	'isWeakSet',
 	'isWindow',
-	'isXMLDoc'
+	'isXMLDoc',
 ]);
 
 const tcGlobalIdentifiers = new Set([
 	'isNaN',
-	'isFinite'
+	'isFinite',
 ]);
 
 const selector = [
 	'ThrowStatement',
-	newExpressionSelector({name: 'Error', path: 'argument'})
+	newExpressionSelector({name: 'Error', path: 'argument'}),
 ].join('');
 
 const isTypecheckingIdentifier = (node, callExpression, isMemberExpression) =>
-	callExpression !== undefined &&
-	callExpression.arguments.length > 0 &&
-	node.type === 'Identifier' &&
-	((isMemberExpression === true &&
-	tcIdentifiers.has(node.name)) ||
-	(isMemberExpression === false &&
-	tcGlobalIdentifiers.has(node.name)));
+	callExpression !== undefined
+	&& callExpression.arguments.length > 0
+	&& node.type === 'Identifier'
+	&& ((isMemberExpression === true
+	&& tcIdentifiers.has(node.name))
+	|| (isMemberExpression === false
+	&& tcGlobalIdentifiers.has(node.name)));
 
 const isLone = node => node.parent && node.parent.body && node.parent.body.length === 1;
 
@@ -89,19 +89,19 @@ const isTypecheckingExpression = (node, callExpression) => {
 			return isTypecheckingExpression(node.callee, node);
 		case 'UnaryExpression':
 			return (
-				node.operator === 'typeof' ||
-				(node.operator === '!' && isTypecheckingExpression(node.argument))
+				node.operator === 'typeof'
+				|| (node.operator === '!' && isTypecheckingExpression(node.argument))
 			);
 		case 'BinaryExpression':
 			return (
-				node.operator === 'instanceof' ||
-				isTypecheckingExpression(node.left, callExpression) ||
-				isTypecheckingExpression(node.right, callExpression)
+				node.operator === 'instanceof'
+				|| isTypecheckingExpression(node.left, callExpression)
+				|| isTypecheckingExpression(node.right, callExpression)
 			);
 		case 'LogicalExpression':
 			return (
-				isTypecheckingExpression(node.left, callExpression) &&
-				isTypecheckingExpression(node.right, callExpression)
+				isTypecheckingExpression(node.left, callExpression)
+				&& isTypecheckingExpression(node.right, callExpression)
 			);
 		default:
 			return false;
@@ -110,33 +110,31 @@ const isTypecheckingExpression = (node, callExpression) => {
 
 const isTypechecking = node => node.type === 'IfStatement' && isTypecheckingExpression(node.test);
 
-const create = () => {
-	return {
-		[selector]: node => {
-			if (
-				isLone(node) &&
-				node.parent.parent &&
-				isTypechecking(node.parent.parent)
-			) {
-				const errorConstructor = node.argument.callee;
-				return {
-					node: errorConstructor,
-					messageId: MESSAGE_ID,
-					fix: fixer => fixer.insertTextBefore(errorConstructor, 'Type')
-				};
-			}
+const create = () => ({
+	[selector]: node => {
+		if (
+			isLone(node)
+				&& node.parent.parent
+				&& isTypechecking(node.parent.parent)
+		) {
+			const errorConstructor = node.argument.callee;
+			return {
+				node: errorConstructor,
+				messageId: MESSAGE_ID,
+				fix: fixer => fixer.insertTextBefore(errorConstructor, 'Type'),
+			};
 		}
-	};
-};
+	},
+});
 
 module.exports = {
 	create,
 	meta: {
 		type: 'suggestion',
 		docs: {
-			description: 'Enforce throwing `TypeError` in type checking conditions.'
+			description: 'Enforce throwing `TypeError` in type checking conditions.',
 		},
 		fixable: 'code',
-		messages
-	}
+		messages,
+	},
 };

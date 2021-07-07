@@ -3,15 +3,15 @@ const isSameReference = require('../utils/is-same-reference.js');
 const {getParenthesizedRange} = require('../utils/parentheses.js');
 
 const isLengthMemberExpression = node =>
-	node.type === 'MemberExpression' &&
-	!node.computed &&
-	!node.optional &&
-	node.property.type === 'Identifier' &&
-	node.property.name === 'length';
+	node.type === 'MemberExpression'
+	&& !node.computed
+	&& !node.optional
+	&& node.property.type === 'Identifier'
+	&& node.property.name === 'length';
 const isLiteralPositiveNumber = node =>
-	node.type === 'Literal' &&
-	typeof node.value === 'number' &&
-	node.value > 0;
+	node.type === 'Literal'
+	&& typeof node.value === 'number'
+	&& node.value > 0;
 
 function getNegativeIndexLengthNode(node, objectNode) {
 	if (!node) {
@@ -36,11 +36,11 @@ function removeLengthNode(node, fixer, sourceCode) {
 	const [start, end] = getParenthesizedRange(node, sourceCode);
 	return fixer.removeRange([
 		start,
-		end + sourceCode.text.slice(end).match(/\S|$/).index
+		end + sourceCode.text.slice(end).match(/\S|$/).index,
 	]);
 }
 
 module.exports = {
 	getNegativeIndexLengthNode,
-	removeLengthNode
+	removeLengthNode,
 };

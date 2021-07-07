@@ -2,7 +2,7 @@
 
 const MESSAGE_ID = 'no-abusive-eslint-disable';
 const messages = {
-	[MESSAGE_ID]: 'Specify the rules you want to disable.'
+	[MESSAGE_ID]: 'Specify the rules you want to disable.',
 };
 
 const disableRegex = /^eslint-disable(?:-next-line|-line)?(?<ruleId>$|(?:\s+(?:@(?:[\w-]+\/){1,2})?[\w-]+)?)/;
@@ -14,8 +14,8 @@ const create = () => ({
 			const result = disableRegex.exec(value);
 
 			if (
-				result && // It's a eslint-disable comment
-				!result.groups.ruleId // But it did not specify any rules
+				result // It's a eslint-disable comment
+				&& !result.groups.ruleId // But it did not specify any rules
 			) {
 				yield {
 					// Can't set it at the given location as the warning
@@ -23,15 +23,15 @@ const create = () => ({
 					loc: {
 						start: {
 							...comment.loc.start,
-							column: -1
+							column: -1,
 						},
-						end: comment.loc.end
+						end: comment.loc.end,
 					},
-					messageId: MESSAGE_ID
+					messageId: MESSAGE_ID,
 				};
 			}
 		}
-	}
+	},
 });
 
 module.exports = {
@@ -39,8 +39,8 @@ module.exports = {
 	meta: {
 		type: 'suggestion',
 		docs: {
-			description: 'Enforce specifying rules to disable in `eslint-disable` comments.'
+			description: 'Enforce specifying rules to disable in `eslint-disable` comments.',
 		},
-		messages
-	}
+		messages,
+	},
 };

@@ -3,7 +3,7 @@ const {replaceTemplateElement} = require('./fix/index.js');
 
 const MESSAGE_ID = 'escape-case';
 const messages = {
-	[MESSAGE_ID]: 'Use uppercase characters for the value of the escape sequence.'
+	[MESSAGE_ID]: 'Use uppercase characters for the value of the escape sequence.',
 };
 
 const escapeWithLowercase = /(?<=(?:^|[^\\])(?:\\\\)*\\)(?<data>x[\dA-Fa-f]{2}|u[\dA-Fa-f]{4}|u{[\dA-Fa-f]+})/g;
@@ -15,48 +15,46 @@ const getProblem = ({node, original, regex = escapeWithLowercase, fix}) => {
 		return {
 			node,
 			messageId: MESSAGE_ID,
-			fix: fixer => fix ? fix(fixer, fixed) : fixer.replaceText(node, fixed)
+			fix: fixer => fix ? fix(fixer, fixed) : fixer.replaceText(node, fixed),
 		};
 	}
 };
 
-const create = () => {
-	return {
-		Literal(node) {
-			if (typeof node.value !== 'string') {
-				return;
-			}
-
-			return getProblem({
-				node,
-				original: node.raw
-			});
-		},
-		'Literal[regex]'(node) {
-			return getProblem({
-				node,
-				original: node.raw,
-				regex: escapePatternWithLowercase
-			});
-		},
-		TemplateElement(node) {
-			return getProblem({
-				node,
-				original: node.value.raw,
-				fix: (fixer, fixed) => replaceTemplateElement(fixer, node, fixed)
-			});
+const create = () => ({
+	Literal(node) {
+		if (typeof node.value !== 'string') {
+			return;
 		}
-	};
-};
+
+		return getProblem({
+			node,
+			original: node.raw,
+		});
+	},
+	'Literal[regex]'(node) {
+		return getProblem({
+			node,
+			original: node.raw,
+			regex: escapePatternWithLowercase,
+		});
+	},
+	TemplateElement(node) {
+		return getProblem({
+			node,
+			original: node.value.raw,
+			fix: (fixer, fixed) => replaceTemplateElement(fixer, node, fixed),
+		});
+	},
+});
 
 module.exports = {
 	create,
 	meta: {
 		type: 'suggestion',
 		docs: {
-			description: 'Require escape sequences to use uppercase values.'
+			description: 'Require escape sequences to use uppercase values.',
 		},
 		fixable: 'code',
-		messages
-	}
+		messages,
+	},
 };

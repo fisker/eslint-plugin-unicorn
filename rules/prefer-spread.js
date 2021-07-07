@@ -22,7 +22,7 @@ const messages = {
 	[SUGGESTION_CONCAT_ARGUMENT_IS_SPREADABLE]: 'First argument is an `array`.',
 	[SUGGESTION_CONCAT_ARGUMENT_IS_NOT_SPREADABLE]: 'First argument is not an `array`.',
 	[SUGGESTION_CONCAT_TEST_ARGUMENT]: 'Test first argument with `Array.isArray(…)`.',
-	[SUGGESTION_CONCAT_SPREAD_ALL_ARGUMENTS]: 'Spread all unknown arguments`.'
+	[SUGGESTION_CONCAT_SPREAD_ALL_ARGUMENTS]: 'Spread all unknown arguments`.',
 };
 
 const arrayFromCallSelector = [
@@ -30,10 +30,10 @@ const arrayFromCallSelector = [
 		object: 'Array',
 		name: 'from',
 		min: 1,
-		max: 3
+		max: 3,
 	}),
 	// Allow `Array.from({length})`
-	'[arguments.0.type!="ObjectExpression"]'
+	'[arguments.0.type!="ObjectExpression"]',
 ].join('');
 
 const arrayConcatCallSelector = [
@@ -42,21 +42,21 @@ const arrayConcatCallSelector = [
 		[
 			...[
 				'Literal',
-				'TemplateLiteral'
+				'TemplateLiteral',
 			].map(type => `[callee.object.type="${type}"]`),
 			// Most likely it's a static method of a class
-			'[callee.object.name=/^[A-Z]/]'
+			'[callee.object.name=/^[A-Z]/]',
 		].join(', ')
-	})`
+	})`,
 ].join('');
 
 const arraySliceCallSelector = [
 	methodCallSelector({
 		name: 'slice',
 		min: 0,
-		max: 1
+		max: 1,
 	}),
-	'[callee.object.type!="ArrayExpression"]'
+	'[callee.object.type!="ArrayExpression"]',
 ].join('');
 
 const ignoredSliceCallee = [
@@ -64,7 +64,7 @@ const ignoredSliceCallee = [
 	'blob',
 	'buffer',
 	'file',
-	'this'
+	'this',
 ];
 
 const isArrayLiteral = node => node.type === 'ArrayExpression';
@@ -94,8 +94,8 @@ function fixConcat(node, sourceCode, fixableArguments) {
 
 	const getArrayLiteralElementsText = (node, keepTrailingComma) => {
 		if (
-			!keepTrailingComma &&
-			isArrayLiteralHasTrailingComma(node, sourceCode)
+			!keepTrailingComma
+			&& isArrayLiteralHasTrailingComma(node, sourceCode)
 		) {
 			const start = node.range[0] + 1;
 			const end = sourceCode.getLastToken(node, 1).range[0];
@@ -124,8 +124,8 @@ function fixConcat(node, sourceCode, fixableArguments) {
 
 				if (isSpreadable) {
 					if (
-						!isParenthesized(node, sourceCode) &&
-						shouldAddParenthesesToSpreadElementArgument(node)
+						!isParenthesized(node, sourceCode)
+						&& shouldAddParenthesesToSpreadElementArgument(node)
 					) {
 						text = `(${text})`;
 					}
@@ -150,8 +150,8 @@ function fixConcat(node, sourceCode, fixableArguments) {
 				}
 
 				if (
-					arrayHasTrailingComma &&
-					(!lastArgument.isArrayLiteral || !isArrayLiteralHasTrailingComma(lastArgument.node, sourceCode))
+					arrayHasTrailingComma
+					&& (!lastArgument.isArrayLiteral || !isArrayLiteralHasTrailingComma(lastArgument.node, sourceCode))
 				) {
 					text = `${text},`;
 				}
@@ -180,16 +180,16 @@ function fixConcat(node, sourceCode, fixableArguments) {
 	return function * (fixer) {
 		// Fixed code always starts with `[`
 		if (
-			!arrayIsArrayLiteral &&
-			needsSemicolon(sourceCode.getTokenBefore(node), sourceCode, '[')
+			!arrayIsArrayLiteral
+			&& needsSemicolon(sourceCode.getTokenBefore(node), sourceCode, '[')
 		) {
 			yield fixer.insertTextBefore(node, ';');
 		}
 
 		yield (
-			concatCallArguments.length - fixableArguments.length === 0 ?
-				fixer.replaceTextRange(getRangeAfterCalleeObject(node, sourceCode), '') :
-				removeArguments(fixer)
+			concatCallArguments.length - fixableArguments.length === 0
+				? fixer.replaceTextRange(getRangeAfterCalleeObject(node, sourceCode), '')
+				: removeArguments(fixer)
 		);
 
 		const text = getFixedText();
@@ -254,8 +254,8 @@ function fixArrayFrom(node, sourceCode) {
 		let text = sourceCode.text.slice(start, end);
 
 		if (
-			!isParenthesized(object, sourceCode) &&
-			shouldAddParenthesesToSpreadElementArgument(object)
+			!isParenthesized(object, sourceCode)
+			&& shouldAddParenthesesToSpreadElementArgument(object)
 		) {
 			text = `(${text})`;
 		}
@@ -314,7 +314,7 @@ const create = context => {
 			return {
 				node,
 				messageId: ERROR_ARRAY_FROM,
-				fix: fixArrayFrom(node, sourceCode)
+				fix: fixArrayFrom(node, sourceCode),
 			};
 		},
 		[arrayConcatCallSelector](node) {
@@ -327,7 +327,7 @@ const create = context => {
 
 			const problem = {
 				node: node.callee.property,
-				messageId: ERROR_ARRAY_CONCAT
+				messageId: ERROR_ARRAY_CONCAT,
 			};
 
 			const fixableArguments = getConcatFixableArguments(node.arguments, scope);
@@ -346,18 +346,18 @@ const create = context => {
 			const suggestions = [
 				{
 					messageId: SUGGESTION_CONCAT_ARGUMENT_IS_SPREADABLE,
-					isSpreadable: true
+					isSpreadable: true,
 				},
 				{
 					messageId: SUGGESTION_CONCAT_ARGUMENT_IS_NOT_SPREADABLE,
-					isSpreadable: false
-				}
+					isSpreadable: false,
+				},
 			];
 
 			if (!hasSideEffect(firstArgument, sourceCode)) {
 				suggestions.push({
 					messageId: SUGGESTION_CONCAT_TEST_ARGUMENT,
-					testArgument: true
+					testArgument: true,
 				});
 			}
 
@@ -371,24 +371,24 @@ const create = context => {
 						{
 							node: firstArgument,
 							isSpreadable,
-							testArgument
+							testArgument,
 						},
-						...fixableArgumentsAfterFirstArgument
-					]
-				)
+						...fixableArgumentsAfterFirstArgument,
+					],
+				),
 			}));
 
 			if (
-				fixableArgumentsAfterFirstArgument.length < restArguments.length &&
-				restArguments.every(({type}) => type !== 'SpreadElement')
+				fixableArgumentsAfterFirstArgument.length < restArguments.length
+				&& restArguments.every(({type}) => type !== 'SpreadElement')
 			) {
 				problem.suggest.push({
 					messageId: SUGGESTION_CONCAT_SPREAD_ALL_ARGUMENTS,
 					fix: fixConcat(
 						node,
 						sourceCode,
-						node.arguments.map(node => getConcatArgumentSpreadable(node, scope) || {node, isSpreadable: true})
-					)
+						node.arguments.map(node => getConcatArgumentSpreadable(node, scope) || {node, isSpreadable: true}),
+					),
 				});
 			}
 
@@ -407,9 +407,9 @@ const create = context => {
 			return {
 				node: node.callee.property,
 				messageId: ERROR_ARRAY_SLICE,
-				fix: fixSlice(node, sourceCode)
+				fix: fixSlice(node, sourceCode),
 			};
-		}
+		},
 	};
 };
 
@@ -418,10 +418,10 @@ module.exports = {
 	meta: {
 		type: 'suggestion',
 		docs: {
-			description: 'Prefer the spread operator over `Array.from(…)`, `Array#concat(…)` and `Array#slice()`.'
+			description: 'Prefer the spread operator over `Array.from(…)`, `Array#concat(…)` and `Array#slice()`.',
 		},
 		fixable: 'code',
 		messages,
-		hasSuggestions: true
-	}
+		hasSuggestions: true,
+	},
 };

@@ -2,12 +2,12 @@
 const isLiteralValue = require('./utils/is-literal-value.js');
 const {
 	getNegativeIndexLengthNode,
-	removeLengthNode
+	removeLengthNode,
 } = require('./shared/negative-index.js');
 
 const MESSAGE_ID = 'prefer-negative-index';
 const messages = {
-	[MESSAGE_ID]: 'Prefer negative index over length minus index for `{{method}}`.'
+	[MESSAGE_ID]: 'Prefer negative index over length minus index for `{{method}}`.',
 };
 
 const methods = new Map([
@@ -29,40 +29,40 @@ const methods = new Map([
 				'Float32Array',
 				'Float64Array',
 				'BigInt64Array',
-				'BigUint64Array'
+				'BigUint64Array',
 				// `{Blob,File}#slice()` are not generally used
 				// 'Blob'
 				// 'File'
-			])
-		}
+			]),
+		},
 	],
 	[
 		'splice',
 		{
 			argumentsIndexes: [0],
 			supportObjects: new Set([
-				'Array'
-			])
-		}
+				'Array',
+			]),
+		},
 	],
 	[
 		'at',
 		{
 			argumentsIndexes: [0],
 			supportObjects: new Set([
-				'Array'
-			])
-		}
-	]
+				'Array',
+			]),
+		},
+	],
 ]);
 
 const getMemberName = node => {
 	const {type, property} = node;
 
 	if (
-		type === 'MemberExpression' &&
-		property &&
-		property.type === 'Identifier'
+		type === 'MemberExpression'
+		&& property
+		&& property.type === 'Identifier'
 	) {
 		return property.name;
 	}
@@ -79,7 +79,7 @@ function parse(node) {
 		return {
 			method,
 			target,
-			argumentsNodes
+			argumentsNodes,
 		};
 	}
 
@@ -102,20 +102,20 @@ function parse(node) {
 	if (
 		// [].{slice,splice}
 		(
-			parentCallee.type === 'ArrayExpression' &&
-			parentCallee.elements.length === 0
-		) ||
+			parentCallee.type === 'ArrayExpression'
+			&& parentCallee.elements.length === 0
+		)
 		// ''.slice
-		(
-			method === 'slice' &&
-			isLiteralValue(parentCallee, '')
-		) ||
+		|| (
+			method === 'slice'
+			&& isLiteralValue(parentCallee, '')
+		)
 		// {Array,String...}.prototype.slice
 		// Array.prototype.splice
-		(
-			getMemberName(parentCallee) === 'prototype' &&
-			parentCallee.object.type === 'Identifier' &&
-			supportObjects.has(parentCallee.object.name)
+		|| (
+			getMemberName(parentCallee) === 'prototype'
+			&& parentCallee.object.type === 'Identifier'
+			&& supportObjects.has(parentCallee.object.name)
 		)
 	) {
 		[target] = originalArguments;
@@ -134,7 +134,7 @@ function parse(node) {
 		return {
 			method,
 			target,
-			argumentsNodes
+			argumentsNodes,
 		};
 	}
 }
@@ -150,7 +150,7 @@ const create = context => ({
 		const {
 			method,
 			target,
-			argumentsNodes
+			argumentsNodes,
 		} = parsed;
 
 		const {argumentsIndexes} = methods.get(method);
@@ -171,9 +171,9 @@ const create = context => ({
 				for (const node of removableNodes) {
 					yield removeLengthNode(node, fixer, sourceCode);
 				}
-			}
+			},
 		};
-	}
+	},
 });
 
 module.exports = {
@@ -181,9 +181,9 @@ module.exports = {
 	meta: {
 		type: 'suggestion',
 		docs: {
-			description: 'Prefer negative index over `.length - index` for `{String,Array,TypedArray}#slice()`, `Array#splice()` and `Array#at()`.'
+			description: 'Prefer negative index over `.length - index` for `{String,Array,TypedArray}#slice()`, `Array#splice()` and `Array#at()`.',
 		},
 		fixable: 'code',
-		messages
-	}
+		messages,
+	},
 };

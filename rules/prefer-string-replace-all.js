@@ -4,12 +4,12 @@ const {methodCallSelector} = require('./selectors/index.js');
 
 const MESSAGE_ID = 'prefer-string-replace-all';
 const messages = {
-	[MESSAGE_ID]: 'Prefer `String#replaceAll()` over `String#replace()`.'
+	[MESSAGE_ID]: 'Prefer `String#replaceAll()` over `String#replace()`.',
 };
 
 const selector = methodCallSelector({
 	name: 'replace',
-	length: 2
+	length: 2,
 });
 
 function isRegexWithGlobalFlag(node) {
@@ -42,36 +42,34 @@ function removeEscapeCharacters(regexString) {
 	return fixedString;
 }
 
-const create = () => {
-	return {
-		[selector]: node => {
-			const {arguments: arguments_, callee} = node;
-			const [search] = arguments_;
+const create = () => ({
+	[selector]: node => {
+		const {arguments: arguments_, callee} = node;
+		const [search] = arguments_;
 
-			if (!isRegexWithGlobalFlag(search) || !isLiteralCharactersOnly(search)) {
-				return;
-			}
-
-			return {
-				node,
-				messageId: MESSAGE_ID,
-				fix: fixer => [
-					fixer.insertTextAfter(callee, 'All'),
-					fixer.replaceText(search, quoteString(removeEscapeCharacters(search.regex.pattern)))
-				]
-			};
+		if (!isRegexWithGlobalFlag(search) || !isLiteralCharactersOnly(search)) {
+			return;
 		}
-	};
-};
+
+		return {
+			node,
+			messageId: MESSAGE_ID,
+			fix: fixer => [
+				fixer.insertTextAfter(callee, 'All'),
+				fixer.replaceText(search, quoteString(removeEscapeCharacters(search.regex.pattern))),
+			],
+		};
+	},
+});
 
 module.exports = {
 	create,
 	meta: {
 		type: 'suggestion',
 		docs: {
-			description: 'Prefer `String#replaceAll()` over regex searches with the global flag.'
+			description: 'Prefer `String#replaceAll()` over regex searches with the global flag.',
 		},
 		fixable: 'code',
-		messages
-	}
+		messages,
+	},
 };

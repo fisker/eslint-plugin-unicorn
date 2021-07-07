@@ -21,7 +21,7 @@ const messages = {
 	[SUGGESTION_DIRNAME]: 'Replace "__dirname" with `"…(import.meta.url)"`.',
 	[SUGGESTION_FILENAME]: 'Replace "__filename" with `"…(import.meta.url)"`.',
 	[SUGGESTION_IMPORT]: 'Switch to `import`.',
-	[SUGGESTION_EXPORT]: 'Switch to `export`.'
+	[SUGGESTION_EXPORT]: 'Switch to `export`.',
 };
 
 const identifierSelector = referenceIdentifierSelector([
@@ -29,7 +29,7 @@ const identifierSelector = referenceIdentifierSelector([
 	'require',
 	'module',
 	'__filename',
-	'__dirname'
+	'__dirname',
 ]);
 
 function * removeParentheses(nodeOrNodes, fixer, sourceCode) {
@@ -50,7 +50,7 @@ function fixRequireCall(node, sourceCode) {
 	const {
 		parent,
 		callee,
-		arguments: [source]
+		arguments: [source],
 	} = requireCall;
 
 	// `require("foo")`
@@ -59,7 +59,7 @@ function fixRequireCall(node, sourceCode) {
 			yield fixer.replaceText(callee, 'import');
 			const openingParenthesisToken = sourceCode.getTokenAfter(
 				callee,
-				isOpeningParenToken
+				isOpeningParenToken,
 			);
 			yield fixer.replaceText(openingParenthesisToken, ' ');
 			const closingParenthesisToken = sourceCode.getLastToken(requireCall);
@@ -71,26 +71,26 @@ function fixRequireCall(node, sourceCode) {
 	// `const foo = require("foo")`
 	// `const {foo} = require("foo")`
 	if (
-		parent.type === 'VariableDeclarator' &&
-		parent.init === requireCall &&
-		(
-			parent.id.type === 'Identifier' ||
-			(
-				parent.id.type === 'ObjectPattern' &&
-				parent.id.properties.every(
+		parent.type === 'VariableDeclarator'
+		&& parent.init === requireCall
+		&& (
+			parent.id.type === 'Identifier'
+			|| (
+				parent.id.type === 'ObjectPattern'
+				&& parent.id.properties.every(
 					({type, key, value, computed}) =>
-						type === 'Property' &&
-						!computed &&
-						value.type === 'Identifier' &&
-						key.type === 'Identifier'
+						type === 'Property'
+						&& !computed
+						&& value.type === 'Identifier'
+						&& key.type === 'Identifier',
 				)
 			)
-		) &&
-		parent.parent.type === 'VariableDeclaration' &&
-		parent.parent.kind === 'const' &&
-		parent.parent.declarations.length === 1 &&
-		parent.parent.declarations[0] === parent &&
-		parent.parent.parent.type === 'Program'
+		)
+		&& parent.parent.type === 'VariableDeclaration'
+		&& parent.parent.kind === 'const'
+		&& parent.parent.declarations.length === 1
+		&& parent.parent.declarations[0] === parent
+		&& parent.parent.parent.type === 'Program'
 	) {
 		const declarator = parent;
 		const declaration = declarator.parent;
@@ -100,14 +100,14 @@ function fixRequireCall(node, sourceCode) {
 			const constToken = sourceCode.getFirstToken(declaration);
 			assertToken(constToken, {
 				expected: {type: 'Keyword', value: 'const'},
-				ruleId: 'prefer-module'
+				ruleId: 'prefer-module',
 			});
 			yield fixer.replaceText(constToken, 'import');
 
 			const equalToken = sourceCode.getTokenAfter(id);
 			assertToken(equalToken, {
 				expected: {type: 'Punctuator', value: '='},
-				ruleId: 'prefer-module'
+				ruleId: 'prefer-module',
 			});
 			yield removeSpacesAfter(id, sourceCode, fixer);
 			yield removeSpacesAfter(equalToken, sourceCode, fixer);
@@ -116,7 +116,7 @@ function fixRequireCall(node, sourceCode) {
 			yield fixer.remove(callee);
 			const openingParenthesisToken = sourceCode.getTokenAfter(
 				callee,
-				isOpeningParenToken
+				isOpeningParenToken,
 			);
 			yield fixer.remove(openingParenthesisToken);
 			const closingParenthesisToken = sourceCode.getLastToken(requireCall);
@@ -136,7 +136,7 @@ function fixRequireCall(node, sourceCode) {
 					const commaToken = sourceCode.getTokenAfter(key);
 					assertToken(commaToken, {
 						expected: {type: 'Punctuator', value: ':'},
-						ruleId: 'prefer-module'
+						ruleId: 'prefer-module',
 					});
 					yield removeSpacesAfter(key, sourceCode, fixer);
 					yield removeSpacesAfter(commaToken, sourceCode, fixer);
@@ -148,26 +148,26 @@ function fixRequireCall(node, sourceCode) {
 }
 
 const isTopLevelAssignment = node =>
-	node.parent.type === 'AssignmentExpression' &&
-	node.parent.operator === '=' &&
-	node.parent.left === node &&
-	node.parent.parent.type === 'ExpressionStatement' &&
-	node.parent.parent.parent.type === 'Program';
+	node.parent.type === 'AssignmentExpression'
+	&& node.parent.operator === '='
+	&& node.parent.left === node
+	&& node.parent.parent.type === 'ExpressionStatement'
+	&& node.parent.parent.parent.type === 'Program';
 const isNamedExport = node =>
-	node.parent.type === 'MemberExpression' &&
-	!node.parent.optional &&
-	!node.parent.computed &&
-	node.parent.object === node &&
-	node.parent.property.type === 'Identifier' &&
-	isTopLevelAssignment(node.parent) &&
-	node.parent.parent.right.type === 'Identifier';
+	node.parent.type === 'MemberExpression'
+	&& !node.parent.optional
+	&& !node.parent.computed
+	&& node.parent.object === node
+	&& node.parent.property.type === 'Identifier'
+	&& isTopLevelAssignment(node.parent)
+	&& node.parent.parent.right.type === 'Identifier';
 const isModuleExports = node =>
-	node.parent.type === 'MemberExpression' &&
-	!node.parent.optional &&
-	!node.parent.computed &&
-	node.parent.object === node &&
-	node.parent.property.type === 'Identifier' &&
-	node.parent.property.name === 'exports';
+	node.parent.type === 'MemberExpression'
+	&& !node.parent.optional
+	&& !node.parent.computed
+	&& node.parent.object === node
+	&& node.parent.property.type === 'Identifier'
+	&& node.parent.property.name === 'exports';
 
 function fixDefaultExport(node, sourceCode) {
 	return function * (fixer) {
@@ -228,13 +228,13 @@ function create(context) {
 				* fix(fixer) {
 					yield fixer.remove(node);
 					yield removeSpacesAfter(node, sourceCode, fixer);
-				}
+				},
 			};
 		},
 		'ReturnStatement:not(:function ReturnStatement)'(node) {
 			return {
 				node: sourceCode.getFirstToken(node),
-				messageId: ERROR_GLOBAL_RETURN
+				messageId: ERROR_GLOBAL_RETURN,
 			};
 		},
 		[identifierSelector](node) {
@@ -247,19 +247,19 @@ function create(context) {
 			const problem = {
 				node,
 				messageId: ERROR_IDENTIFIER,
-				data: {name}
+				data: {name},
 			};
 
 			switch (name) {
 				case '__filename':
 				case '__dirname': {
 					const messageId = node.name === '__dirname' ? SUGGESTION_DIRNAME : SUGGESTION_FILENAME;
-					const replacement = node.name === '__dirname' ?
-						'path.dirname(url.fileURLToPath(import.meta.url))' :
-						'url.fileURLToPath(import.meta.url)';
+					const replacement = node.name === '__dirname'
+						? 'path.dirname(url.fileURLToPath(import.meta.url))'
+						: 'url.fileURLToPath(import.meta.url)';
 					problem.suggest = [{
 						messageId,
-						fix: fixer => replaceReferenceIdentifier(node, replacement, fixer)
+						fix: fixer => replaceReferenceIdentifier(node, replacement, fixer),
 					}];
 					return problem;
 				}
@@ -269,7 +269,7 @@ function create(context) {
 					if (fix) {
 						problem.suggest = [{
 							messageId: SUGGESTION_IMPORT,
-							fix
+							fix,
 						}];
 						return problem;
 					}
@@ -282,7 +282,7 @@ function create(context) {
 					if (fix) {
 						problem.suggest = [{
 							messageId: SUGGESTION_EXPORT,
-							fix
+							fix,
 						}];
 						return problem;
 					}
@@ -295,7 +295,7 @@ function create(context) {
 					if (fix) {
 						problem.suggest = [{
 							messageId: SUGGESTION_EXPORT,
-							fix
+							fix,
 						}];
 						return problem;
 					}
@@ -307,7 +307,7 @@ function create(context) {
 			}
 
 			return problem;
-		}
+		},
 	};
 }
 
@@ -316,10 +316,10 @@ module.exports = {
 	meta: {
 		type: 'suggestion',
 		docs: {
-			description: 'Prefer JavaScript modules (ESM) over CommonJS.'
+			description: 'Prefer JavaScript modules (ESM) over CommonJS.',
 		},
 		fixable: 'code',
 		messages,
-		hasSuggestions: true
-	}
+		hasSuggestions: true,
+	},
 };

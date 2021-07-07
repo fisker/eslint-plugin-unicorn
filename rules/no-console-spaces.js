@@ -4,7 +4,7 @@ const toLocation = require('./utils/to-location.js');
 
 const MESSAGE_ID = 'no-console-spaces';
 const messages = {
-	[MESSAGE_ID]: 'Do not use {{position}} space between `console.{{method}}` parameters.'
+	[MESSAGE_ID]: 'Do not use {{position}} space between `console.{{method}}` parameters.',
 };
 
 const methods = [
@@ -12,13 +12,13 @@ const methods = [
 	'debug',
 	'info',
 	'warn',
-	'error'
+	'error',
 ];
 
 const selector = methodCallSelector({
 	names: methods,
 	min: 1,
-	object: 'console'
+	object: 'console',
 });
 
 // Find exactly one leading space, allow exactly one space
@@ -30,16 +30,16 @@ const hasTrailingSpace = value => value.length > 1 && value.charAt(value.length 
 const create = context => {
 	const sourceCode = context.getSourceCode();
 	const getProblem = (node, method, position) => {
-		const index = position === 'leading' ?
-			node.range[0] + 1 :
-			node.range[1] - 2;
+		const index = position === 'leading'
+			? node.range[0] + 1
+			: node.range[1] - 2;
 		const range = [index, index + 1];
 
 		return {
 			loc: toLocation(range, sourceCode),
 			messageId: MESSAGE_ID,
 			data: {method, position},
-			fix: fixer => fixer.removeRange(range)
+			fix: fixer => fixer.removeRange(range),
 		};
 	};
 
@@ -51,8 +51,8 @@ const create = context => {
 			for (const [index, node] of messages.entries()) {
 				const {type, value} = node;
 				if (
-					!(type === 'Literal' && typeof value === 'string') &&
-					type !== 'TemplateLiteral'
+					!(type === 'Literal' && typeof value === 'string')
+					&& type !== 'TemplateLiteral'
 				) {
 					continue;
 				}
@@ -67,7 +67,7 @@ const create = context => {
 					yield getProblem(node, method, 'trailing');
 				}
 			}
-		}
+		},
 	};
 };
 
@@ -76,9 +76,9 @@ module.exports = {
 	meta: {
 		type: 'suggestion',
 		docs: {
-			description: 'Do not use leading/trailing space between `console.log` parameters.'
+			description: 'Do not use leading/trailing space between `console.log` parameters.',
 		},
 		fixable: 'code',
-		messages
-	}
+		messages,
+	},
 };

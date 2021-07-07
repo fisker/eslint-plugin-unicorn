@@ -4,22 +4,22 @@ const translateToKey = require('./shared/event-keys.js');
 
 const MESSAGE_ID = 'prefer-keyboard-event-key';
 const messages = {
-	[MESSAGE_ID]: 'Use `.key` instead of `.{{name}}`.'
+	[MESSAGE_ID]: 'Use `.key` instead of `.{{name}}`.',
 };
 
 const keys = new Set([
 	'keyCode',
 	'charCode',
-	'which'
+	'which',
 ]);
 
 const isPropertyNamedAddEventListener = node =>
-	node &&
-	node.type === 'CallExpression' &&
-	node.callee &&
-	node.callee.type === 'MemberExpression' &&
-	node.callee.property &&
-	node.callee.property.name === 'addEventListener';
+	node
+	&& node.type === 'CallExpression'
+	&& node.callee
+	&& node.callee.type === 'MemberExpression'
+	&& node.callee.property
+	&& node.callee.property.name === 'addEventListener';
 
 const getEventNodeAndReferences = (context, node) => {
 	const eventListener = getMatchingAncestorOfType(node, 'CallExpression', isPropertyNamedAddEventListener);
@@ -31,7 +31,7 @@ const getEventNodeAndReferences = (context, node) => {
 			const references = eventVariable && eventVariable.references;
 			return {
 				event: callback.params && callback.params[0],
-				references
+				references,
 			};
 		}
 
@@ -41,11 +41,11 @@ const getEventNodeAndReferences = (context, node) => {
 };
 
 const isPropertyOf = (node, eventNode) =>
-	node &&
-	node.parent &&
-	node.parent.type === 'MemberExpression' &&
-	node.parent.object &&
-	node.parent.object === eventNode;
+	node
+	&& node.parent
+	&& node.parent.type === 'MemberExpression'
+	&& node.parent.object
+	&& node.parent.object === eventNode;
 
 // The third argument is a condition function, as one passed to `Array#filter()`
 // Helpful if nearest node of type also needs to have some other property
@@ -93,7 +93,7 @@ const fix = node => fixer => {
 	// Apply fixes
 	return [
 		fixer.replaceText(node, 'key'),
-		fixer.replaceText(right, quoteString(keyCode))
+		fixer.replaceText(right, quoteString(keyCode)),
 	];
 };
 
@@ -101,77 +101,75 @@ const getProblem = node => ({
 	messageId: MESSAGE_ID,
 	data: {name: node.name},
 	node,
-	fix: fix(node)
+	fix: fix(node),
 });
 
-const create = context => {
-	return {
-		'Identifier:matches([name="keyCode"], [name="charCode"], [name="which"])'(node) {
-			// Normal case when usage is direct -> `event.keyCode`
-			const {event, references} = getEventNodeAndReferences(context, node);
-			if (!event) {
-				return;
-			}
+const create = context => ({
+	'Identifier:matches([name="keyCode"], [name="charCode"], [name="which"])'(node) {
+		// Normal case when usage is direct -> `event.keyCode`
+		const {event, references} = getEventNodeAndReferences(context, node);
+		if (!event) {
+			return;
+		}
 
-			if (
-				references &&
-				references.some(reference => isPropertyOf(node, reference.identifier))
-			) {
-				return getProblem(node);
-			}
-		},
+		if (
+			references
+				&& references.some(reference => isPropertyOf(node, reference.identifier))
+		) {
+			return getProblem(node);
+		}
+	},
 
-		Property(node) {
-			// Destructured case
-			const propertyName = node.value && node.value.name;
-			if (!keys.has(propertyName)) {
-				return;
-			}
+	Property(node) {
+		// Destructured case
+		const propertyName = node.value && node.value.name;
+		if (!keys.has(propertyName)) {
+			return;
+		}
 
-			const {event, references} = getEventNodeAndReferences(context, node);
-			if (!event) {
-				return;
-			}
+		const {event, references} = getEventNodeAndReferences(context, node);
+		if (!event) {
+			return;
+		}
 
-			const nearestVariableDeclarator = getMatchingAncestorOfType(
-				node,
-				'VariableDeclarator'
-			);
-			const initObject =
-				nearestVariableDeclarator &&
-				nearestVariableDeclarator.init &&
-				nearestVariableDeclarator.init;
+		const nearestVariableDeclarator = getMatchingAncestorOfType(
+			node,
+			'VariableDeclarator',
+		);
+		const initObject
+				= nearestVariableDeclarator
+				&& nearestVariableDeclarator.init
+				&& nearestVariableDeclarator.init;
 
-			// Make sure initObject is a reference of eventVariable
-			if (
-				references &&
-				references.some(reference => reference.identifier === initObject)
-			) {
-				return getProblem(node.value);
-			}
+		// Make sure initObject is a reference of eventVariable
+		if (
+			references
+				&& references.some(reference => reference.identifier === initObject)
+		) {
+			return getProblem(node.value);
+		}
 
-			// When the event parameter itself is destructured directly
-			const isEventParameterDestructured = event.type === 'ObjectPattern';
-			if (isEventParameterDestructured) {
-				// Check for properties
-				for (const property of event.properties) {
-					if (property === node) {
-						return getProblem(node.value);
-					}
+		// When the event parameter itself is destructured directly
+		const isEventParameterDestructured = event.type === 'ObjectPattern';
+		if (isEventParameterDestructured) {
+			// Check for properties
+			for (const property of event.properties) {
+				if (property === node) {
+					return getProblem(node.value);
 				}
 			}
 		}
-	};
-};
+	},
+});
 
 module.exports = {
 	create,
 	meta: {
 		type: 'suggestion',
 		docs: {
-			description: 'Prefer `KeyboardEvent#key` over `KeyboardEvent#keyCode`.'
+			description: 'Prefer `KeyboardEvent#key` over `KeyboardEvent#keyCode`.',
 		},
 		fixable: 'code',
-		messages
-	}
+		messages,
+	},
 };

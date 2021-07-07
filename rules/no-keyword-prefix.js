@@ -2,23 +2,21 @@
 
 const MESSAGE_ID = 'noKeywordPrefix';
 const messages = {
-	[MESSAGE_ID]: 'Do not prefix identifiers with keyword `{{keyword}}`.'
+	[MESSAGE_ID]: 'Do not prefix identifiers with keyword `{{keyword}}`.',
 };
 
 const prepareOptions = ({
 	disallowedPrefixes,
 	checkProperties = true,
-	onlyCamelCase = true
-} = {}) => {
-	return {
-		disallowedPrefixes: (disallowedPrefixes || [
-			'new',
-			'class'
-		]),
-		checkProperties,
-		onlyCamelCase
-	};
-};
+	onlyCamelCase = true,
+} = {}) => ({
+	disallowedPrefixes: (disallowedPrefixes || [
+		'new',
+		'class',
+	]),
+	checkProperties,
+	onlyCamelCase,
+});
 
 function findKeywordPrefix(name, options) {
 	return options.disallowedPrefixes.find(keyword => {
@@ -40,10 +38,10 @@ function checkMemberExpression(report, node, options) {
 	if (parent.object.type === 'Identifier' && parent.object.name === name && Boolean(keyword)) {
 		report(node, keyword);
 	} else if (
-		effectiveParent.type === 'AssignmentExpression' &&
-		Boolean(keyword) &&
-		(effectiveParent.right.type !== 'MemberExpression' || effectiveParent.left.type === 'MemberExpression') &&
-		effectiveParent.left.property.name === name
+		effectiveParent.type === 'AssignmentExpression'
+		&& Boolean(keyword)
+		&& (effectiveParent.right.type !== 'MemberExpression' || effectiveParent.left.type === 'MemberExpression')
+		&& effectiveParent.left.property.name === name
 	) {
 		report(node, keyword);
 	}
@@ -96,8 +94,8 @@ const create = context => {
 				messageId: MESSAGE_ID,
 				data: {
 					name: node.name,
-					keyword
-				}
+					keyword,
+				},
 			});
 		}
 	}
@@ -111,8 +109,8 @@ const create = context => {
 			if (parent.type === 'MemberExpression') {
 				checkMemberExpression(report, node, options);
 			} else if (
-				parent.type === 'Property' ||
-				parent.type === 'AssignmentPattern'
+				parent.type === 'Property'
+				|| parent.type === 'AssignmentPattern'
 			) {
 				if (parent.parent && parent.parent.type === 'ObjectPattern') {
 					const finished = checkObjectPattern(report, node, options);
@@ -129,9 +127,9 @@ const create = context => {
 
 				// Don't check right hand side of AssignmentExpression to prevent duplicate warnings
 				if (
-					Boolean(keyword) &&
-					!ALLOWED_PARENT_TYPES.has(effectiveParent.type) &&
-					!(parent.right === node)
+					Boolean(keyword)
+					&& !ALLOWED_PARENT_TYPES.has(effectiveParent.type)
+					&& !(parent.right === node)
 				) {
 					report(node, keyword);
 				}
@@ -141,26 +139,26 @@ const create = context => {
 				[
 					'ImportSpecifier',
 					'ImportNamespaceSpecifier',
-					'ImportDefaultSpecifier'
+					'ImportDefaultSpecifier',
 				].includes(parent.type)
 			) {
 				// Report only if the local imported identifier is invalid
 				if (
-					Boolean(keyword) &&
-					parent.local &&
-					parent.local.name === name
+					Boolean(keyword)
+					&& parent.local
+					&& parent.local.name === name
 				) {
 					report(node, keyword);
 				}
 
 			// Report anything that is invalid that isn't a CallExpression
 			} else if (
-				Boolean(keyword) &&
-				!ALLOWED_PARENT_TYPES.has(effectiveParent.type)
+				Boolean(keyword)
+				&& !ALLOWED_PARENT_TYPES.has(effectiveParent.type)
 			) {
 				report(node, keyword);
 			}
-		}
+		},
 	};
 };
 
@@ -172,21 +170,21 @@ const schema = [
 				type: 'array',
 				items: [
 					{
-						type: 'string'
-					}
+						type: 'string',
+					},
 				],
 				minItems: 0,
-				uniqueItems: true
+				uniqueItems: true,
 			},
 			checkProperties: {
-				type: 'boolean'
+				type: 'boolean',
 			},
 			onlyCamelCase: {
-				type: 'boolean'
-			}
+				type: 'boolean',
+			},
 		},
-		additionalProperties: false
-	}
+		additionalProperties: false,
+	},
 ];
 
 module.exports = {
@@ -194,9 +192,9 @@ module.exports = {
 	meta: {
 		type: 'suggestion',
 		docs: {
-			description: 'Disallow identifiers starting with `new` or `class`.'
+			description: 'Disallow identifiers starting with `new` or `class`.',
 		},
 		schema,
-		messages
-	}
+		messages,
+	},
 };

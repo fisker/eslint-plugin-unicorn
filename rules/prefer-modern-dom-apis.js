@@ -6,13 +6,13 @@ const messages = {
 	replaceChildOrInsertBefore:
 		'Prefer `{{oldChildNode}}.{{preferredMethod}}({{newChildNode}})` over `{{parentNode}}.{{method}}({{newChildNode}}, {{oldChildNode}})`.',
 	insertAdjacentTextOrInsertAdjacentElement:
-		'Prefer `{{reference}}.{{preferredMethod}}({{content}})` over `{{reference}}.{{method}}({{position}}, {{content}})`.'
+		'Prefer `{{reference}}.{{preferredMethod}}({{content}})` over `{{reference}}.{{method}}({{position}}, {{content}})`.',
 };
 
 const replaceChildOrInsertBeforeSelector = [
 	methodCallSelector({
 		names: ['replaceChild', 'insertBefore'],
-		length: 2
+		length: 2,
 	}),
 	// We only allow Identifier for now
 	'[arguments.0.type="Identifier"]',
@@ -20,12 +20,12 @@ const replaceChildOrInsertBeforeSelector = [
 	'[arguments.1.type="Identifier"]',
 	'[arguments.1.name!="undefined"]',
 	// This check makes sure that only the first method of chained methods with same identifier name e.g: parentNode.insertBefore(alfa, beta).insertBefore(charlie, delta); gets reported
-	'[callee.object.type="Identifier"]'
+	'[callee.object.type="Identifier"]',
 ].join('');
 
 const forbiddenMethods = new Map([
 	['replaceChild', 'replaceWith'],
-	['insertBefore', 'before']
+	['insertBefore', 'before'],
 ]);
 
 const checkForReplaceChildOrInsertBefore = (context, node) => {
@@ -34,12 +34,12 @@ const checkForReplaceChildOrInsertBefore = (context, node) => {
 	const [newChildNode, oldChildNode] = node.arguments.map(({name}) => name);
 	const preferredMethod = forbiddenMethods.get(method);
 
-	const fix = isValueNotUsable(node) ?
-		fixer => fixer.replaceText(
+	const fix = isValueNotUsable(node)
+		? fixer => fixer.replaceText(
 			node,
-			`${oldChildNode}.${preferredMethod}(${newChildNode})`
-		) :
-		undefined;
+			`${oldChildNode}.${preferredMethod}(${newChildNode})`,
+		)
+		: undefined;
 
 	return {
 		node,
@@ -49,30 +49,30 @@ const checkForReplaceChildOrInsertBefore = (context, node) => {
 			method,
 			preferredMethod,
 			newChildNode,
-			oldChildNode
+			oldChildNode,
 		},
-		fix
+		fix,
 	};
 };
 
 const insertAdjacentTextOrInsertAdjacentElementSelector = [
 	methodCallSelector({
 		names: ['insertAdjacentText', 'insertAdjacentElement'],
-		length: 2
+		length: 2,
 	}),
 	// Position argument should be `string`
 	'[arguments.0.type="Literal"]',
 	// TODO: remove this limits on second argument
 	':matches([arguments.1.type="Literal"], [arguments.1.type="Identifier"])',
 	// TODO: remove this limits on callee
-	'[callee.object.type="Identifier"]'
+	'[callee.object.type="Identifier"]',
 ].join('');
 
 const positionReplacers = new Map([
 	['beforebegin', 'before'],
 	['afterbegin', 'prepend'],
 	['beforeend', 'append'],
-	['afterend', 'after']
+	['afterend', 'after'],
 ]);
 
 const checkForInsertAdjacentTextOrInsertAdjacentElement = (context, node) => {
@@ -89,12 +89,12 @@ const checkForInsertAdjacentTextOrInsertAdjacentElement = (context, node) => {
 	const content = context.getSource(contentNode);
 	const reference = context.getSource(node.callee.object);
 
-	const fix = method === 'insertAdjacentElement' && !isValueNotUsable(node) ?
-		undefined :
+	const fix = method === 'insertAdjacentElement' && !isValueNotUsable(node)
+		? undefined
 		// TODO: make a better fix, don't touch reference
-		fixer => fixer.replaceText(
+		: fixer => fixer.replaceText(
 			node,
-			`${reference}.${preferredMethod}(${content})`
+			`${reference}.${preferredMethod}(${content})`,
 		);
 
 	return {
@@ -105,31 +105,29 @@ const checkForInsertAdjacentTextOrInsertAdjacentElement = (context, node) => {
 			method,
 			preferredMethod,
 			position: context.getSource(positionNode),
-			content
+			content,
 		},
-		fix
+		fix,
 	};
 };
 
-const create = context => {
-	return {
-		[replaceChildOrInsertBeforeSelector](node) {
-			return checkForReplaceChildOrInsertBefore(context, node);
-		},
-		[insertAdjacentTextOrInsertAdjacentElementSelector](node) {
-			return checkForInsertAdjacentTextOrInsertAdjacentElement(context, node);
-		}
-	};
-};
+const create = context => ({
+	[replaceChildOrInsertBeforeSelector](node) {
+		return checkForReplaceChildOrInsertBefore(context, node);
+	},
+	[insertAdjacentTextOrInsertAdjacentElementSelector](node) {
+		return checkForInsertAdjacentTextOrInsertAdjacentElement(context, node);
+	},
+});
 
 module.exports = {
 	create,
 	meta: {
 		type: 'suggestion',
 		docs: {
-			description: 'Prefer `.before()` over `.insertBefore()`, `.replaceWith()` over `.replaceChild()`, prefer one of `.before()`, `.after()`, `.append()` or `.prepend()` over `insertAdjacentText()` and `insertAdjacentElement()`.'
+			description: 'Prefer `.before()` over `.insertBefore()`, `.replaceWith()` over `.replaceChild()`, prefer one of `.before()`, `.after()`, `.append()` or `.prepend()` over `insertAdjacentText()` and `insertAdjacentElement()`.',
 		},
 		fixable: 'code',
-		messages
-	}
+		messages,
+	},
 };

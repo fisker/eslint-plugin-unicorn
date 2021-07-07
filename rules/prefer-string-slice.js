@@ -5,7 +5,7 @@ const MESSAGE_ID_SUBSTR = 'substr';
 const MESSAGE_ID_SUBSTRING = 'substring';
 const messages = {
 	[MESSAGE_ID_SUBSTR]: 'Prefer `String#slice()` over `String#substr()`.',
-	[MESSAGE_ID_SUBSTRING]: 'Prefer `String#slice()` over `String#substring()`.'
+	[MESSAGE_ID_SUBSTRING]: 'Prefer `String#slice()` over `String#substring()`.',
 };
 
 const templates = eslintTemplateVisitor();
@@ -30,11 +30,11 @@ const getNumericValue = node => {
 
 // This handles cases where the argument is very likely to be a number, such as `.substring('foo'.length)`.
 const isLengthProperty = node => (
-	node &&
-	node.type === 'MemberExpression' &&
-	node.computed === false &&
-	node.property.type === 'Identifier' &&
-	node.property.name === 'length'
+	node
+	&& node.type === 'MemberExpression'
+	&& node.computed === false
+	&& node.property.type === 'Identifier'
+	&& node.property.name === 'length'
 );
 
 const isLikelyNumeric = node => isLiteralNumber(node) || isLengthProperty(node);
@@ -47,8 +47,8 @@ const create = context => {
 		const before = sourceCode.getTokenBefore(node);
 		const after = sourceCode.getTokenAfter(node);
 		if (
-			(before && before.type === 'Punctuator' && before.value === '(') &&
-			(after && after.type === 'Punctuator' && after.value === ')')
+			(before && before.type === 'Punctuator' && before.value === '(')
+			&& (after && after.type === 'Punctuator' && after.value === ')')
 		) {
 			return `(${text})`;
 		}
@@ -63,7 +63,7 @@ const create = context => {
 
 			const problem = {
 				node,
-				messageId: MESSAGE_ID_SUBSTR
+				messageId: MESSAGE_ID_SUBSTR,
 			};
 
 			const firstArgument = argumentNodes[0] ? sourceCode.getText(argumentNodes[0]) : undefined;
@@ -93,16 +93,16 @@ const create = context => {
 							sliceArguments.push(`Math.max(0, ${secondArgument})`);
 						}
 					} else if (
-						isLiteralNumber(argumentNodes[0]) &&
-						isLiteralNumber(argumentNodes[1])
+						isLiteralNumber(argumentNodes[0])
+						&& isLiteralNumber(argumentNodes[1])
 					) {
 						sliceArguments = [
 							firstArgument,
-							argumentNodes[0].value + argumentNodes[1].value
+							argumentNodes[0].value + argumentNodes[1].value,
 						];
 					} else if (
-						isLikelyNumeric(argumentNodes[0]) &&
-					isLikelyNumeric(argumentNodes[1])
+						isLikelyNumeric(argumentNodes[0])
+					&& isLikelyNumeric(argumentNodes[1])
 					) {
 						sliceArguments = [firstArgument, firstArgument + ' + ' + secondArgument];
 					}
@@ -129,7 +129,7 @@ const create = context => {
 
 			const problem = {
 				node,
-				messageId: MESSAGE_ID_SUBSTRING
+				messageId: MESSAGE_ID_SUBSTRING,
 			};
 
 			const firstArgument = argumentNodes[0] ? sourceCode.getText(argumentNodes[0]) : undefined;
@@ -161,9 +161,9 @@ const create = context => {
 					const secondNumber = getNumericValue(argumentNodes[1]);
 
 					if (firstNumber !== undefined && secondNumber !== undefined) {
-						sliceArguments = firstNumber > secondNumber ?
-							[Math.max(0, secondNumber), Math.max(0, firstNumber)] :
-							[Math.max(0, firstNumber), Math.max(0, secondNumber)];
+						sliceArguments = firstNumber > secondNumber
+							? [Math.max(0, secondNumber), Math.max(0, firstNumber)]
+							: [Math.max(0, firstNumber), Math.max(0, secondNumber)];
 					} else if (firstNumber === 0 || secondNumber === 0) {
 						sliceArguments = [0, `Math.max(0, ${firstNumber === 0 ? secondArgument : firstArgument})`];
 					} else {
@@ -189,7 +189,7 @@ const create = context => {
 			}
 
 			context.report(problem);
-		}
+		},
 	});
 };
 
@@ -198,9 +198,9 @@ module.exports = {
 	meta: {
 		type: 'suggestion',
 		docs: {
-			description: 'Prefer `String#slice()` over `String#substr()` and `String#substring()`.'
+			description: 'Prefer `String#slice()` over `String#substr()` and `String#substring()`.',
 		},
 		fixable: 'code',
-		messages
-	}
+		messages,
+	},
 };

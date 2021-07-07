@@ -5,7 +5,7 @@ const shouldAddParenthesesToNewExpressionCallee = require('./utils/should-add-pa
 
 const messageId = 'throw-new-error';
 const messages = {
-	[messageId]: 'Use `new` when throwing an error.'
+	[messageId]: 'Use `new` when throwing an error.',
 };
 
 const customError = /^(?:[A-Z][\da-z]*)*Error$/;
@@ -18,39 +18,37 @@ const selector = [
 		// `throw FooError()`
 		[
 			'[callee.type="Identifier"]',
-			`[callee.name=/${customError.source}/]`
+			`[callee.name=/${customError.source}/]`,
 		].join(''),
 		// `throw lib.FooError()`
 		[
 			'[callee.type="MemberExpression"]',
 			'[callee.computed=false]',
 			'[callee.property.type="Identifier"]',
-			`[callee.property.name=/${customError.source}/]`
-		].join('')
-	])
+			`[callee.property.name=/${customError.source}/]`,
+		].join(''),
+	]),
 ].join('');
 
 const create = context => ({
-	[selector]: node => {
-		return {
-			node,
-			messageId,
-			* fix(fixer) {
-				const errorConstructor = node.callee;
-				const sourceCode = context.getSourceCode();
-				const range = getParenthesizedRange(errorConstructor, sourceCode);
-				yield fixer.insertTextBeforeRange(range, 'new ');
+	[selector]: node => ({
+		node,
+		messageId,
+		* fix(fixer) {
+			const errorConstructor = node.callee;
+			const sourceCode = context.getSourceCode();
+			const range = getParenthesizedRange(errorConstructor, sourceCode);
+			yield fixer.insertTextBeforeRange(range, 'new ');
 
-				if (
-					!isParenthesized(errorConstructor, sourceCode) &&
-					shouldAddParenthesesToNewExpressionCallee(errorConstructor)
-				) {
-					yield fixer.insertTextBeforeRange(range, '(');
-					yield fixer.insertTextAfterRange(range, ')');
-				}
+			if (
+				!isParenthesized(errorConstructor, sourceCode)
+					&& shouldAddParenthesesToNewExpressionCallee(errorConstructor)
+			) {
+				yield fixer.insertTextBeforeRange(range, '(');
+				yield fixer.insertTextAfterRange(range, ')');
 			}
-		};
-	}
+		},
+	}),
 });
 
 module.exports = {
@@ -58,9 +56,9 @@ module.exports = {
 	meta: {
 		type: 'suggestion',
 		docs: {
-			description: 'Require `new` when throwing an error.'
+			description: 'Require `new` when throwing an error.',
 		},
 		fixable: 'code',
-		messages
-	}
+		messages,
+	},
 };

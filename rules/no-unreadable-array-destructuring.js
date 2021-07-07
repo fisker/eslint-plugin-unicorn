@@ -4,7 +4,7 @@ const shouldAddParenthesesToMemberExpressionObject = require('./utils/should-add
 
 const MESSAGE_ID = 'no-unreadable-array-destructuring';
 const messages = {
-	[MESSAGE_ID]: 'Array destructuring may not contain consecutive ignored values.'
+	[MESSAGE_ID]: 'Array destructuring may not contain consecutive ignored values.',
 };
 
 const isCommaFollowedWithComma = (element, index, array) =>
@@ -23,15 +23,15 @@ const create = context => {
 
 			const problem = {
 				node,
-				messageId: MESSAGE_ID
+				messageId: MESSAGE_ID,
 			};
 
 			const nonNullElements = elements.filter(node => node !== null);
 			if (
-				parent.type === 'VariableDeclarator' &&
-				parent.id === node &&
-				parent.init !== null &&
-				nonNullElements.length === 1
+				parent.type === 'VariableDeclarator'
+				&& parent.id === node
+				&& parent.init !== null
+				&& nonNullElements.length === 1
 			) {
 				const [element] = nonNullElements;
 
@@ -46,8 +46,8 @@ const create = context => {
 						const code = isSlice ? `.slice(${index})` : `[${index}]`;
 						const array = parent.init;
 						if (
-							!isParenthesized(array, sourceCode) &&
-							shouldAddParenthesesToMemberExpressionObject(array, sourceCode)
+							!isParenthesized(array, sourceCode)
+							&& shouldAddParenthesesToMemberExpressionObject(array, sourceCode)
 						) {
 							yield fixer.insertTextBefore(array, '(');
 							yield fixer.insertTextAfter(parent, `)${code}`);
@@ -59,7 +59,7 @@ const create = context => {
 			}
 
 			return problem;
-		}
+		},
 	};
 };
 
@@ -68,9 +68,9 @@ module.exports = {
 	meta: {
 		type: 'suggestion',
 		docs: {
-			description: 'Disallow unreadable array destructuring.'
+			description: 'Disallow unreadable array destructuring.',
 		},
 		fixable: 'code',
-		messages
-	}
+		messages,
+	},
 };

@@ -4,7 +4,7 @@ const getReferences = require('./utils/get-references.js');
 
 const MESSAGE_ID = 'consistent-function-scoping';
 const messages = {
-	[MESSAGE_ID]: 'Move {{functionNameWithKind}} to the outer scope.'
+	[MESSAGE_ID]: 'Move {{functionNameWithKind}} to the outer scope.',
 };
 
 const isSameScope = (scope1, scope2) =>
@@ -36,8 +36,8 @@ function checkReferences(scope, parent, scopeManager) {
 	const hitIdentifier = identifiers => identifiers.some(identifier => {
 		// Only look at identifiers that live in a FunctionDeclaration
 		if (
-			!identifier.parent ||
-				identifier.parent.type !== 'FunctionDeclaration'
+			!identifier.parent
+				|| identifier.parent.type !== 'FunctionDeclaration'
 		) {
 			return false;
 		}
@@ -70,9 +70,9 @@ function checkReferences(scope, parent, scopeManager) {
 		.map(({resolved}) => resolved)
 		.filter(Boolean)
 		.some(variable =>
-			hitReference(variable.references) ||
-			hitDefinitions(variable.defs) ||
-			hitIdentifier(variable.identifiers)
+			hitReference(variable.references)
+			|| hitDefinitions(variable.defs)
+			|| hitIdentifier(variable.identifiers),
 		);
 }
 
@@ -87,30 +87,30 @@ const reactHooks = new Set([
 	'useRef',
 	'useImperativeHandle',
 	'useLayoutEffect',
-	'useDebugValue'
+	'useDebugValue',
 ]);
 const isReactHook = scope =>
-	scope.block &&
-	scope.block.parent &&
-	scope.block.parent.callee &&
-	scope.block.parent.callee.type === 'Identifier' &&
-	reactHooks.has(scope.block.parent.callee.name);
+	scope.block
+	&& scope.block.parent
+	&& scope.block.parent.callee
+	&& scope.block.parent.callee.type === 'Identifier'
+	&& reactHooks.has(scope.block.parent.callee.name);
 
 const isArrowFunctionWithThis = scope =>
-	scope.type === 'function' &&
-	scope.block &&
-	scope.block.type === 'ArrowFunctionExpression' &&
-	(scope.thisFound || scope.childScopes.some(scope => isArrowFunctionWithThis(scope)));
+	scope.type === 'function'
+	&& scope.block
+	&& scope.block.type === 'ArrowFunctionExpression'
+	&& (scope.thisFound || scope.childScopes.some(scope => isArrowFunctionWithThis(scope)));
 
 const iifeFunctionTypes = new Set([
 	'FunctionExpression',
-	'ArrowFunctionExpression'
+	'ArrowFunctionExpression',
 ]);
-const isIife = node => node &&
-	iifeFunctionTypes.has(node.type) &&
-	node.parent &&
-	node.parent.type === 'CallExpression' &&
-	node.parent.callee === node;
+const isIife = node => node
+	&& iifeFunctionTypes.has(node.type)
+	&& node.parent
+	&& node.parent.type === 'CallExpression'
+	&& node.parent.callee === node;
 
 function checkNode(node, scopeManager) {
 	const scope = scopeManager.acquire(node);
@@ -138,10 +138,10 @@ function checkNode(node, scopeManager) {
 
 	const parentScope = scopeManager.acquire(parentNode);
 	if (
-		!parentScope ||
-		parentScope.type === 'global' ||
-		isReactHook(parentScope) ||
-		isIife(parentNode)
+		!parentScope
+		|| parentScope.type === 'global'
+		|| isReactHook(parentScope)
+		|| isIife(parentNode)
 	) {
 		return true;
 	}
@@ -186,10 +186,10 @@ const create = context => {
 				loc: getFunctionHeadLocation(node, sourceCode),
 				messageId: MESSAGE_ID,
 				data: {
-					functionNameWithKind: getFunctionNameWithKind(node, sourceCode)
-				}
+					functionNameWithKind: getFunctionNameWithKind(node, sourceCode),
+				},
 			};
-		}
+		},
 	};
 };
 
@@ -199,10 +199,10 @@ const schema = [
 		properties: {
 			checkArrowFunctions: {
 				type: 'boolean',
-				default: true
-			}
-		}
-	}
+				default: true,
+			},
+		},
+	},
 ];
 
 module.exports = {
@@ -210,9 +210,9 @@ module.exports = {
 	meta: {
 		type: 'suggestion',
 		docs: {
-			description: 'Move function definitions to the highest possible scope.'
+			description: 'Move function definitions to the highest possible scope.',
 		},
 		schema,
-		messages
-	}
+		messages,
+	},
 };

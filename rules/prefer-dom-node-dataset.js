@@ -5,15 +5,15 @@ const {methodCallSelector} = require('./selectors/index.js');
 
 const MESSAGE_ID = 'prefer-dom-node-dataset';
 const messages = {
-	[MESSAGE_ID]: 'Prefer `.dataset` over `setAttribute(…)`.'
+	[MESSAGE_ID]: 'Prefer `.dataset` over `setAttribute(…)`.',
 };
 
 const selector = [
 	methodCallSelector({
 		name: 'setAttribute',
-		length: 2
+		length: 2,
 	}),
-	'[arguments.0.type="Literal"]'
+	'[arguments.0.type="Literal"]',
 ].join('');
 
 const parseNodeText = (context, argument) => context.getSourceCode().getText(argument);
@@ -28,40 +28,38 @@ const fix = (context, node, fixer) => {
 	value = parseNodeText(context, value);
 
 	const replacement = `${calleeObject}.dataset${
-		isValidVariableName(name) ?
-			`.${name}` :
-			`[${quoteString(name)}]`
+		isValidVariableName(name)
+			? `.${name}`
+			: `[${quoteString(name)}]`
 	} = ${value}`;
 
 	return fixer.replaceText(node, replacement);
 };
 
-const create = context => {
-	return {
-		[selector](node) {
-			const name = node.arguments[0].value;
+const create = context => ({
+	[selector](node) {
+		const name = node.arguments[0].value;
 
-			if (typeof name !== 'string' || !name.startsWith('data-') || name === 'data-') {
-				return;
-			}
-
-			return {
-				node,
-				messageId: MESSAGE_ID,
-				fix: fixer => fix(context, node, fixer)
-			};
+		if (typeof name !== 'string' || !name.startsWith('data-') || name === 'data-') {
+			return;
 		}
-	};
-};
+
+		return {
+			node,
+			messageId: MESSAGE_ID,
+			fix: fixer => fix(context, node, fixer),
+		};
+	},
+});
 
 module.exports = {
 	create,
 	meta: {
 		type: 'suggestion',
 		docs: {
-			description: 'Prefer using `.dataset` on DOM elements over `.setAttribute(…)`.'
+			description: 'Prefer using `.dataset` on DOM elements over `.setAttribute(…)`.',
 		},
 		fixable: 'code',
-		messages
-	}
+		messages,
+	},
 };

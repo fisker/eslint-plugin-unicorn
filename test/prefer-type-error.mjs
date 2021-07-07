@@ -6,8 +6,8 @@ const {test} = getTester(import.meta);
 const MESSAGE_ID = 'prefer-type-error';
 const errors = [
 	{
-		messageId: MESSAGE_ID
-	}
+		messageId: MESSAGE_ID,
+	},
 ];
 
 const tcIdentifiers = new Set([
@@ -47,24 +47,22 @@ const tcIdentifiers = new Set([
 	'isWeakMap',
 	'isWeakSet',
 	'isWindow',
-	'isXMLDoc'
+	'isXMLDoc',
 ]);
 
-const tcIdentifierInvalidTest = identifier => {
-	return {
-		code: outdent`
+const tcIdentifierInvalidTest = identifier => ({
+	code: outdent`
 			if (SomeThing.${identifier}(foo) === bar) {
 				throw new Error('foo is bar');
 			}
 		`,
-		output: outdent`
+	output: outdent`
 			if (SomeThing.${identifier}(foo) === bar) {
 				throw new TypeError('foo is bar');
 			}
 		`,
-		errors
-	};
-};
+	errors,
+});
 
 test({
 	valid: [
@@ -277,7 +275,7 @@ test({
 				default:
 					throw new Error('Unknown');
 			}
-		`
+		`,
 	],
 	invalid: [
 		{
@@ -291,7 +289,7 @@ test({
 					throw new TypeError();
 				}
 			`,
-			errors
+			errors,
 		},
 		{
 			code: outdent`
@@ -304,7 +302,7 @@ test({
 					throw new TypeError();
 				}
 			`,
-			errors
+			errors,
 		},
 		{
 			code: outdent`
@@ -317,7 +315,7 @@ test({
 					throw new TypeError('foo is an Array');
 				}
 			`,
-			errors
+			errors,
 		},
 		{
 			code: outdent`
@@ -330,7 +328,7 @@ test({
 					throw new TypeError(foobar);
 				}
 			`,
-			errors
+			errors,
 		},
 		{
 			code: outdent`
@@ -343,7 +341,7 @@ test({
 					throw new TypeError();
 				}
 			`,
-			errors
+			errors,
 		},
 		{
 			code: outdent`
@@ -356,7 +354,7 @@ test({
 					throw new TypeError;
 				}
 			`,
-			errors
+			errors,
 		},
 		{
 			code: outdent`
@@ -369,7 +367,7 @@ test({
 					throw new TypeError;
 				}
 			`,
-			errors
+			errors,
 		},
 		{
 			code: outdent`
@@ -382,7 +380,7 @@ test({
 					throw new TypeError();
 				}
 			`,
-			errors
+			errors,
 		},
 		{
 			code: outdent`
@@ -395,7 +393,7 @@ test({
 					throw new TypeError();
 				}
 			`,
-			errors
+			errors,
 		},
 		{
 			code: outdent`
@@ -408,7 +406,7 @@ test({
 					throw new TypeError();
 				}
 			`,
-			errors
+			errors,
 		},
 		{
 			code: outdent`
@@ -421,10 +419,10 @@ test({
 					throw new TypeError();
 				}
 			`,
-			errors
+			errors,
 		},
-		...[...tcIdentifiers].map(identifier => tcIdentifierInvalidTest(identifier))
-	]
+		...[...tcIdentifiers].map(identifier => tcIdentifierInvalidTest(identifier)),
+	],
 });
 
 test.snapshot({
@@ -434,6 +432,6 @@ test.snapshot({
 			if (!isFinite(foo)) {
 				throw new Error();
 			}
-		`
-	]
+		`,
+	],
 });

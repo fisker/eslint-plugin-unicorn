@@ -3,21 +3,21 @@ const {methodCallSelector, notDomNodeSelector} = require('./selectors/index.js')
 
 const MESSAGE_ID = 'prefer-query-selector';
 const messages = {
-	[MESSAGE_ID]: 'Prefer `.{{replacement}}()` over `.{{method}}()`.'
+	[MESSAGE_ID]: 'Prefer `.{{replacement}}()` over `.{{method}}()`.',
 };
 
 const selector = [
 	methodCallSelector({
 		names: ['getElementById', 'getElementsByClassName', 'getElementsByTagName'],
-		length: 1
+		length: 1,
 	}),
-	notDomNodeSelector('callee.object')
+	notDomNodeSelector('callee.object'),
 ].join('');
 
 const forbiddenIdentifierNames = new Map([
 	['getElementById', 'querySelector'],
 	['getElementsByClassName', 'querySelectorAll'],
-	['getElementsByTagName', 'querySelectorAll']
+	['getElementsByTagName', 'querySelectorAll'],
 ]);
 
 const getReplacementForId = value => `#${value}`;
@@ -50,14 +50,14 @@ function * getTemplateLiteralFix(fixer, node, identifierName) {
 		if (identifierName === 'getElementById') {
 			yield fixer.replaceText(
 				templateElement,
-				getReplacementForId(templateElement.value.cooked)
+				getReplacementForId(templateElement.value.cooked),
 			);
 		}
 
 		if (identifierName === 'getElementsByClassName') {
 			yield fixer.replaceText(
 				templateElement,
-				getReplacementForClass(templateElement.value.cooked)
+				getReplacementForClass(templateElement.value.cooked),
 			);
 		}
 	}
@@ -70,8 +70,8 @@ const canBeFixed = node => {
 
 	if (node.type === 'TemplateLiteral') {
 		return (
-			node.expressions.length === 0 &&
-			node.quasis.some(templateElement => templateElement.value.cooked.trim())
+			node.expressions.length === 0
+			&& node.quasis.some(templateElement => templateElement.value.cooked.trim())
 		);
 	}
 
@@ -99,38 +99,36 @@ const fix = (node, identifierName, preferredSelector) => {
 	};
 };
 
-const create = () => {
-	return {
-		[selector](node) {
-			const method = node.callee.property.name;
-			const preferredSelector = forbiddenIdentifierNames.get(method);
+const create = () => ({
+	[selector](node) {
+		const method = node.callee.property.name;
+		const preferredSelector = forbiddenIdentifierNames.get(method);
 
-			const problem = {
-				node: node.callee.property,
-				messageId: MESSAGE_ID,
-				data: {
-					replacement: preferredSelector,
-					method
-				}
-			};
+		const problem = {
+			node: node.callee.property,
+			messageId: MESSAGE_ID,
+			data: {
+				replacement: preferredSelector,
+				method,
+			},
+		};
 
-			if (canBeFixed(node.arguments[0])) {
-				problem.fix = fix(node, method, preferredSelector);
-			}
-
-			return problem;
+		if (canBeFixed(node.arguments[0])) {
+			problem.fix = fix(node, method, preferredSelector);
 		}
-	};
-};
+
+		return problem;
+	},
+});
 
 module.exports = {
 	create,
 	meta: {
 		type: 'suggestion',
 		docs: {
-			description: 'Prefer `.querySelector()` over `.getElementById()`, `.querySelectorAll()` over `.getElementsByClassName()` and `.getElementsByTagName()`.'
+			description: 'Prefer `.querySelector()` over `.getElementById()`, `.querySelectorAll()` over `.getElementsByClassName()` and `.getElementsByTagName()`.',
 		},
 		fixable: 'code',
-		messages
-	}
+		messages,
+	},
 };

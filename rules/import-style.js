@@ -6,7 +6,7 @@ const {callExpressionSelector} = require('./selectors/index.js');
 
 const MESSAGE_ID = 'importStyle';
 const messages = {
-	[MESSAGE_ID]: 'Use {{allowedStyles}} import for module `{{moduleName}}`.'
+	[MESSAGE_ID]: 'Use {{allowedStyles}} import for module `{{moduleName}}`.',
 };
 
 const getActualImportDeclarationStyles = importDeclaration => {
@@ -104,40 +104,38 @@ const getActualAssignmentTargetImportStyles = assignmentTarget => {
 	return [];
 };
 
-const joinOr = words => {
-	return words
-		.map((word, index) => {
-			if (index === words.length - 1) {
-				return word;
-			}
+const joinOr = words => words
+	.map((word, index) => {
+		if (index === words.length - 1) {
+			return word;
+		}
 
-			if (index === words.length - 2) {
-				return word + ' or';
-			}
+		if (index === words.length - 2) {
+			return word + ' or';
+		}
 
-			return word + ',';
-		})
-		.join(' ');
-};
+		return word + ',';
+	})
+	.join(' ');
 
 // Keep this alphabetically sorted for easier maintenance
 const defaultStyles = {
 	chalk: {
-		default: true
+		default: true,
 	},
 	path: {
-		default: true
+		default: true,
 	},
 	util: {
-		named: true
-	}
+		named: true,
+	},
 };
 
 const templates = eslintTemplateVisitor({
 	parserOptions: {
 		sourceType: 'module',
-		ecmaVersion: 2018
-	}
+		ecmaVersion: 2018,
+	},
 });
 
 const variableDeclarationVariable = templates.variableDeclarationVariable();
@@ -160,19 +158,19 @@ const create = context => {
 			checkImport = true,
 			checkDynamicImport = true,
 			checkExportFrom = false,
-			checkRequire = true
-		} = {}
+			checkRequire = true,
+		} = {},
 	] = context.options;
 
-	styles = extendDefaultStyles ?
-		defaultsDeep({}, styles, defaultStyles) :
-		styles;
+	styles = extendDefaultStyles
+		? defaultsDeep({}, styles, defaultStyles)
+		: styles;
 
 	styles = new Map(
 		Object.entries(styles).map(
 			([moduleName, styles]) =>
-				[moduleName, new Set(Object.entries(styles).filter(([, isAllowed]) => isAllowed).map(([style]) => style))]
-		)
+				[moduleName, new Set(Object.entries(styles).filter(([, isAllowed]) => isAllowed).map(([style]) => style))],
+		),
 	);
 
 	const report = (node, moduleName, actualImportStyles, allowedImportStyles, isRequire = false) => {
@@ -197,13 +195,13 @@ const create = context => {
 
 		const data = {
 			allowedStyles: joinOr([...allowedImportStyles.keys()]),
-			moduleName
+			moduleName,
 		};
 
 		context.report({
 			node,
 			messageId: MESSAGE_ID,
-			data
+			data,
 		});
 	};
 
@@ -220,7 +218,7 @@ const create = context => {
 				const actualImportStyles = getActualImportDeclarationStyles(node);
 
 				report(node, moduleName, actualImportStyles, allowedImportStyles);
-			}
+			},
 		};
 	}
 
@@ -249,7 +247,7 @@ const create = context => {
 				const actualImportStyles = getActualAssignmentTargetImportStyles(assignmentTargetNode);
 
 				report(node, moduleName, actualImportStyles, allowedImportStyles);
-			}
+			},
 		};
 	}
 
@@ -273,7 +271,7 @@ const create = context => {
 				const actualImportStyles = getActualExportDeclarationStyles(node);
 
 				report(node, moduleName, actualImportStyles, allowedImportStyles);
-			}
+			},
 		};
 	}
 
@@ -302,7 +300,7 @@ const create = context => {
 				const actualImportStyles = getActualAssignmentTargetImportStyles(assignmentTargetNode);
 
 				report(node, moduleName, actualImportStyles, allowedImportStyles, true);
-			}
+			},
 		};
 	}
 
@@ -314,52 +312,52 @@ const schema = [
 		type: 'object',
 		properties: {
 			checkImport: {
-				type: 'boolean'
+				type: 'boolean',
 			},
 			checkDynamicImport: {
-				type: 'boolean'
+				type: 'boolean',
 			},
 			checkExportFrom: {
-				type: 'boolean'
+				type: 'boolean',
 			},
 			checkRequire: {
-				type: 'boolean'
+				type: 'boolean',
 			},
 			extendDefaultStyles: {
-				type: 'boolean'
+				type: 'boolean',
 			},
 			styles: {
-				$ref: '#/items/0/definitions/moduleStyles'
-			}
+				$ref: '#/items/0/definitions/moduleStyles',
+			},
 		},
 		additionalProperties: false,
 		definitions: {
 			moduleStyles: {
 				type: 'object',
 				additionalProperties: {
-					$ref: '#/items/0/definitions/styles'
-				}
+					$ref: '#/items/0/definitions/styles',
+				},
 			},
 			styles: {
 				anyOf: [
 					{
 						enum: [
-							false
-						]
+							false,
+						],
 					},
 					{
-						$ref: '#/items/0/definitions/booleanObject'
-					}
-				]
+						$ref: '#/items/0/definitions/booleanObject',
+					},
+				],
 			},
 			booleanObject: {
 				type: 'object',
 				additionalProperties: {
-					type: 'boolean'
-				}
-			}
-		}
-	}
+					type: 'boolean',
+				},
+			},
+		},
+	},
 ];
 
 module.exports = {
@@ -367,9 +365,9 @@ module.exports = {
 	meta: {
 		type: 'problem',
 		docs: {
-			description: 'Enforce specific import styles per module.'
+			description: 'Enforce specific import styles per module.',
 		},
 		schema,
-		messages
-	}
+		messages,
+	},
 };

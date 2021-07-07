@@ -5,7 +5,7 @@ const {
 	isCommaToken,
 	isSemicolonToken,
 	isClosingParenToken,
-	findVariable
+	findVariable,
 } = require('eslint-utils');
 const {methodCallSelector, referenceIdentifierSelector} = require('./selectors/index.js');
 const {extendFixRange} = require('./fix/index.js');
@@ -18,13 +18,13 @@ const assertToken = require('./utils/assert-token.js');
 
 const MESSAGE_ID = 'no-array-for-each';
 const messages = {
-	[MESSAGE_ID]: 'Use `for…of` instead of `Array#forEach(…)`.'
+	[MESSAGE_ID]: 'Use `for…of` instead of `Array#forEach(…)`.',
 };
 
 const arrayForEachCallSelector = methodCallSelector({
 	name: 'forEach',
 	includeOptionalCall: true,
-	includeOptionalMember: true
+	includeOptionalMember: true,
 });
 
 const continueAbleNodeTypes = new Set([
@@ -32,7 +32,7 @@ const continueAbleNodeTypes = new Set([
 	'DoWhileStatement',
 	'ForStatement',
 	'ForOfStatement',
-	'ForInStatement'
+	'ForInStatement',
 ]);
 
 function isReturnStatementInContinueAbleNodes(returnStatement, callbackFunction) {
@@ -119,7 +119,7 @@ function getFixFunction(callExpression, functionInfo, context) {
 		const returnToken = sourceCode.getFirstToken(returnStatement);
 		assertToken(returnToken, {
 			expected: 'return',
-			ruleId: 'no-array-for-each'
+			ruleId: 'no-array-for-each',
 		});
 
 		if (!returnStatement.argument) {
@@ -134,9 +134,9 @@ function getFixFunction(callExpression, functionInfo, context) {
 		const nextToken = sourceCode.getTokenAfter(returnToken);
 		let textBefore = '';
 		let textAfter = '';
-		const shouldAddParentheses =
-			!isParenthesized(returnStatement.argument, sourceCode) &&
-			shouldAddParenthesesToExpressionStatementExpression(returnStatement.argument);
+		const shouldAddParentheses
+			= !isParenthesized(returnStatement.argument, sourceCode)
+			&& shouldAddParenthesesToExpressionStatementExpression(returnStatement.argument);
 		if (shouldAddParentheses) {
 			textBefore = `(${textBefore}`;
 			textAfter = `${textAfter})`;
@@ -208,7 +208,7 @@ function getFixFunction(callExpression, functionInfo, context) {
 
 		const [
 			penultimateToken,
-			lastToken
+			lastToken,
 		] = sourceCode.getLastTokens(callExpression, 2);
 
 		// The possible trailing comma token of `Array#forEach()` CallExpression
@@ -268,9 +268,9 @@ function isFunctionParametersSafeToFix(callbackFunction, {context, scope, array,
 		for (const identifier of allIdentifiers) {
 			const {name, range: [start, end]} = identifier;
 			if (
-				name !== variableName ||
-				start < arrayStart ||
-				end > arrayEnd
+				name !== variableName
+				|| start < arrayStart
+				|| end > arrayEnd
 			) {
 				continue;
 			}
@@ -293,8 +293,8 @@ function isFunctionParameterVariableReassigned(callbackFunction, context) {
 			return references.some(reference => {
 				const node = reference.identifier;
 				const {parent} = node;
-				return parent.type === 'UpdateExpression' ||
-					(parent.type === 'AssignmentExpression' && parent.left === node);
+				return parent.type === 'UpdateExpression'
+					|| (parent.type === 'AssignmentExpression' && parent.left === node);
 			});
 		});
 }
@@ -303,9 +303,9 @@ function isFixable(callExpression, {scope, functionInfo, allIdentifiers, context
 	const sourceCode = context.getSourceCode();
 	// Check `CallExpression`
 	if (
-		callExpression.optional ||
-		isParenthesized(callExpression, sourceCode) ||
-		callExpression.arguments.length !== 1
+		callExpression.optional
+		|| isParenthesized(callExpression, sourceCode)
+		|| callExpression.arguments.length !== 1
 	) {
 		return false;
 	}
@@ -325,9 +325,9 @@ function isFixable(callExpression, {scope, functionInfo, allIdentifiers, context
 	const [callback] = callExpression.arguments;
 	if (
 		// Leave non-function type to `no-array-callback-reference` rule
-		(callback.type !== 'FunctionExpression' && callback.type !== 'ArrowFunctionExpression') ||
-			callback.async ||
-			callback.generator
+		(callback.type !== 'FunctionExpression' && callback.type !== 'ArrowFunctionExpression')
+			|| callback.async
+			|| callback.generator
 	) {
 		return false;
 	}
@@ -335,9 +335,9 @@ function isFixable(callExpression, {scope, functionInfo, allIdentifiers, context
 	// Check `callback.params`
 	const parameters = callback.params;
 	if (
-		!(parameters.length === 1 || parameters.length === 2) ||
-		parameters.some(({type, typeAnnotation}) => type === 'RestElement' || typeAnnotation) ||
-		!isFunctionParametersSafeToFix(callback, {scope, array: callExpression, allIdentifiers, context})
+		!(parameters.length === 1 || parameters.length === 2)
+		|| parameters.some(({type, typeAnnotation}) => type === 'RestElement' || typeAnnotation)
+		|| !isFunctionParametersSafeToFix(callback, {scope, array: callExpression, allIdentifiers, context})
 	) {
 		return false;
 	}
@@ -357,7 +357,7 @@ function isFixable(callExpression, {scope, functionInfo, allIdentifiers, context
 
 const ignoredObjects = [
 	'React.Children',
-	'Children'
+	'Children',
 ];
 
 const create = context => {
@@ -371,7 +371,7 @@ const create = context => {
 			functionStack.push(node);
 			functionInfo.set(node, {
 				returnStatements: [],
-				scope: context.getScope()
+				scope: context.getScope(),
 			});
 		},
 		':function:exit'() {
@@ -392,14 +392,14 @@ const create = context => {
 
 			callExpressions.push({
 				node,
-				scope: context.getScope()
+				scope: context.getScope(),
 			});
 		},
 		* 'Program:exit'() {
 			for (const {node, scope} of callExpressions) {
 				const problem = {
 					node: node.callee.property,
-					messageId: MESSAGE_ID
+					messageId: MESSAGE_ID,
 				};
 
 				if (isFixable(node, {scope, allIdentifiers, functionInfo, context})) {
@@ -408,7 +408,7 @@ const create = context => {
 
 				yield problem;
 			}
-		}
+		},
 	};
 };
 
@@ -417,9 +417,9 @@ module.exports = {
 	meta: {
 		type: 'suggestion',
 		docs: {
-			description: 'Prefer `for…of` over `Array#forEach(…)`.'
+			description: 'Prefer `for…of` over `Array#forEach(…)`.',
 		},
 		fixable: 'code',
-		messages
-	}
+		messages,
+	},
 };

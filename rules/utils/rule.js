@@ -36,7 +36,7 @@ function reportProblems(create) {
 
 	const wrapped = context => Object.fromEntries(
 		Object.entries(create(context))
-			.map(([selector, listener]) => [selector, reportListenerProblems(listener, context)])
+			.map(([selector, listener]) => [selector, reportListenerProblems(listener, context)]),
 	);
 
 	wrappedFunctions.add(wrapped);
@@ -46,10 +46,10 @@ function reportProblems(create) {
 
 function checkVueTemplate(create, options) {
 	const {
-		visitScriptBlock
+		visitScriptBlock,
 	} = {
 		visitScriptBlock: true,
-		...options
+		...options,
 	};
 
 	create = reportProblems(create);
@@ -59,12 +59,12 @@ function checkVueTemplate(create, options) {
 
 		// `vue-eslint-parser`
 		if (
-			context.parserServices &&
-			context.parserServices.defineTemplateBodyVisitor
+			context.parserServices
+			&& context.parserServices.defineTemplateBodyVisitor
 		) {
-			return visitScriptBlock ?
-				context.parserServices.defineTemplateBodyVisitor(listeners, listeners) :
-				context.parserServices.defineTemplateBodyVisitor(listeners);
+			return visitScriptBlock
+				? context.parserServices.defineTemplateBodyVisitor(listeners, listeners)
+				: context.parserServices.defineTemplateBodyVisitor(listeners);
 		}
 
 		return listeners;
@@ -85,10 +85,10 @@ function loadRule(ruleId) {
 			...rule.meta,
 			docs: {
 				...rule.meta.docs,
-				url: getDocumentationUrl(ruleId)
-			}
+				url: getDocumentationUrl(ruleId),
+			},
 		},
-		create: reportProblems(rule.create)
+		create: reportProblems(rule.create),
 	};
 }
 
@@ -99,12 +99,12 @@ function loadRules() {
 			.map(file => {
 				const ruleId = path.basename(file.name, '.js');
 				return [ruleId, loadRule(ruleId)];
-			})
+			}),
 	);
 }
 
 module.exports = {
 	loadRule,
 	loadRules,
-	checkVueTemplate
+	checkVueTemplate,
 };

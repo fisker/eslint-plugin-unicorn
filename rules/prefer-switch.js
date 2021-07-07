@@ -5,7 +5,7 @@ const getIndentString = require('./utils/get-indent-string.js');
 
 const MESSAGE_ID = 'prefer-switch';
 const messages = {
-	[MESSAGE_ID]: 'Use `switch` instead of multiple `else-if`.'
+	[MESSAGE_ID]: 'Use `switch` instead of multiple `else-if`.',
 };
 
 const isSame = (nodeA, nodeB) => nodeA === nodeB || isSameReference(nodeA, nodeB);
@@ -61,7 +61,7 @@ function getStatements(statement) {
 
 		const candidates = getCommonReferences(
 			compareExpressions,
-			discriminantCandidates
+			discriminantCandidates,
 		);
 
 		if (candidates.length === 0) {
@@ -72,13 +72,13 @@ function getStatements(statement) {
 
 		ifStatements.push({
 			statement,
-			compareExpressions
+			compareExpressions,
 		});
 	}
 
 	return {
 		ifStatements,
-		discriminant: discriminantCandidates && discriminantCandidates[0]
+		discriminant: discriminantCandidates && discriminantCandidates[0],
 	};
 }
 
@@ -88,7 +88,7 @@ const breakAbleNodeTypes = new Set([
 	'ForStatement',
 	'ForOfStatement',
 	'ForInStatement',
-	'SwitchStatement'
+	'SwitchStatement',
 ]);
 const getBreakTarget = node => {
 	for (;node.parent; node = node.parent) {
@@ -166,9 +166,9 @@ function shouldInsertBreakStatement(node) {
 			return false;
 
 		case 'IfStatement':
-			return !node.alternate ||
-				shouldInsertBreakStatement(node.consequent) ||
-				shouldInsertBreakStatement(node.alternate);
+			return !node.alternate
+				|| shouldInsertBreakStatement(node.consequent)
+				|| shouldInsertBreakStatement(node.alternate);
 
 		case 'BlockStatement': {
 			const lastNode = getBlockStatementLastNode(node);
@@ -248,7 +248,7 @@ const create = context => {
 		minimumCases: 3,
 		emptyDefaultCase: 'no-default-comment',
 		insertBreakInDefaultCase: false,
-		...context.options[0]
+		...context.options[0],
 	};
 	const sourceCode = context.getSourceCode();
 	const ifStatements = new Set();
@@ -281,21 +281,21 @@ const create = context => {
 				const problem = {
 					loc: {
 						start: node.loc.start,
-						end: node.consequent.loc.start
+						end: node.consequent.loc.start,
 					},
-					messageId: MESSAGE_ID
+					messageId: MESSAGE_ID,
 				};
 
 				if (
-					!hasSideEffect(discriminant, sourceCode) &&
-					!ifStatements.some(({statement}) => hasBreakInside(breakStatements, statement))
+					!hasSideEffect(discriminant, sourceCode)
+					&& !ifStatements.some(({statement}) => hasBreakInside(breakStatements, statement))
 				) {
 					problem.fix = fix({discriminant, ifStatements}, sourceCode, options);
 				}
 
 				yield problem;
 			}
-		}
+		},
 	};
 };
 
@@ -306,19 +306,19 @@ const schema = [
 			minimumCases: {
 				type: 'integer',
 				minimum: 2,
-				default: 3
+				default: 3,
 			},
 			emptyDefaultCase: {
 				enum: [
 					'no-default-comment',
 					'do-nothing-comment',
-					'no-default-case'
+					'no-default-case',
 				],
-				default: 'no-default-comment'
-			}
+				default: 'no-default-comment',
+			},
 		},
-		additionalProperties: false
-	}
+		additionalProperties: false,
+	},
 ];
 
 module.exports = {
@@ -326,10 +326,10 @@ module.exports = {
 	meta: {
 		type: 'suggestion',
 		docs: {
-			description: 'Prefer `switch` over multiple `else-if`.'
+			description: 'Prefer `switch` over multiple `else-if`.',
 		},
 		fixable: 'code',
 		schema,
-		messages
-	}
+		messages,
+	},
 };

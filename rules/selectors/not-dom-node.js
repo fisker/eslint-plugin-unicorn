@@ -10,21 +10,21 @@ const impossibleNodeTypes = [
 	'FunctionExpression',
 	'Literal',
 	'ObjectExpression',
-	'TemplateLiteral'
+	'TemplateLiteral',
 ];
 
 // We might need this later
 /* istanbul ignore next */
 const isNotDomNode = node =>
-	impossibleNodeTypes.includes(node.type) ||
-	(node.type === 'Identifier' && node.name === 'undefined');
+	impossibleNodeTypes.includes(node.type)
+	|| (node.type === 'Identifier' && node.name === 'undefined');
 
 const notDomNodeSelector = node => [
 	...impossibleNodeTypes.map(type => `[${node}.type!="${type}"]`),
-	`:not([${node}.type="Identifier"][${node}.name="undefined"])`
+	`:not([${node}.type="Identifier"][${node}.name="undefined"])`,
 ].join('');
 
 module.exports = {
 	isNotDomNode,
-	notDomNodeSelector
+	notDomNodeSelector,
 };

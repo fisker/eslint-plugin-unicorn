@@ -4,7 +4,7 @@ const isLiteralValue = require('./utils/is-literal-value.js');
 const {
 	isParenthesized,
 	getParenthesizedRange,
-	getParenthesizedText
+	getParenthesizedText,
 } = require('./utils/parentheses.js');
 const {isNodeMatchesNameOrPath} = require('./utils/is-node-matches.js');
 const needsSemicolon = require('./utils/needs-semicolon.js');
@@ -12,7 +12,7 @@ const shouldAddParenthesesToMemberExpressionObject = require('./utils/should-add
 const isLeftHandSide = require('./utils/is-left-hand-side.js');
 const {
 	getNegativeIndexLengthNode,
-	removeLengthNode
+	removeLengthNode,
 } = require('./shared/negative-index.js');
 const {methodCallSelector, callExpressionSelector, notLeftHandSideSelector} = require('./selectors/index.js');
 const {removeMemberExpressionProperty, removeMethodCall} = require('./fix/index.js');
@@ -31,46 +31,46 @@ const messages = {
 	[MESSAGE_ID_STRING_CHAR_AT]: 'Prefer `String#at(…)` over `String#charAt(…)`.',
 	[MESSAGE_ID_SLICE]: 'Prefer `.at(…)` over the first element from `.slice(…)`.',
 	[MESSAGE_ID_GET_LAST_FUNCTION]: 'Prefer `.at(-1)` over `{{description}}(…)` to get the last element.',
-	[SUGGESTION_ID]: 'Use `.at(…)`.'
+	[SUGGESTION_ID]: 'Use `.at(…)`.',
 };
 
 const indexAccess = [
 	'MemberExpression',
 	'[optional!=true]',
 	'[computed!=false]',
-	notLeftHandSideSelector()
+	notLeftHandSideSelector(),
 ].join('');
 const sliceCall = methodCallSelector({name: 'slice', min: 1, max: 2});
 const stringCharAt = methodCallSelector({name: 'charAt', length: 1});
 
 const isLiteralNegativeInteger = node =>
-	node.type === 'UnaryExpression' &&
-	node.prefix &&
-	node.operator === '-' &&
-	node.argument.type === 'Literal' &&
-	Number.isInteger(node.argument.value) &&
-	node.argument.value > 0;
+	node.type === 'UnaryExpression'
+	&& node.prefix
+	&& node.operator === '-'
+	&& node.argument.type === 'Literal'
+	&& Number.isInteger(node.argument.value)
+	&& node.argument.value > 0;
 const isZeroIndexAccess = node => {
 	const {parent} = node;
-	return parent.type === 'MemberExpression' &&
-		!parent.optional &&
-		parent.computed &&
-		parent.object === node &&
-		isLiteralValue(parent.property, 0);
+	return parent.type === 'MemberExpression'
+		&& !parent.optional
+		&& parent.computed
+		&& parent.object === node
+		&& isLiteralValue(parent.property, 0);
 };
 
 const isArrayPopOrShiftCall = (node, method) => {
 	const {parent} = node;
-	return parent.type === 'MemberExpression' &&
-		!parent.optional &&
-		!parent.computed &&
-		parent.object === node &&
-		parent.property.type === 'Identifier' &&
-		parent.property.name === method &&
-		parent.parent.type === 'CallExpression' &&
-		parent.parent.callee === parent &&
-		!parent.parent.optional &&
-		parent.parent.arguments.length === 0;
+	return parent.type === 'MemberExpression'
+		&& !parent.optional
+		&& !parent.computed
+		&& parent.object === node
+		&& parent.property.type === 'Identifier'
+		&& parent.property.name === method
+		&& parent.parent.type === 'CallExpression'
+		&& parent.parent.callee === parent
+		&& !parent.parent.optional
+		&& parent.parent.arguments.length === 0;
 };
 
 const isArrayPopCall = node => isArrayPopOrShiftCall(node, 'pop');
@@ -104,9 +104,9 @@ function checkSliceCall(node) {
 	const startIndex = -startIndexNode.argument.value;
 	if (sliceArgumentsLength === 1) {
 		if (
-			firstElementGetMethod === 'zero-index' ||
-			firstElementGetMethod === 'shift' ||
-			(startIndex === -1 && firstElementGetMethod === 'pop')
+			firstElementGetMethod === 'zero-index'
+			|| firstElementGetMethod === 'shift'
+			|| (startIndex === -1 && firstElementGetMethod === 'pop')
 		) {
 			return {safeToFix: true, firstElementGetMethod};
 		}
@@ -115,8 +115,8 @@ function checkSliceCall(node) {
 	}
 
 	if (
-		isLiteralNegativeInteger(endIndexNode) &&
-		-endIndexNode.argument.value === startIndex + 1
+		isLiteralNegativeInteger(endIndexNode)
+		&& -endIndexNode.argument.value === startIndex + 1
 	) {
 		return {safeToFix: true, firstElementGetMethod};
 	}
@@ -131,18 +131,18 @@ function checkSliceCall(node) {
 const lodashLastFunctions = [
 	'_.last',
 	'lodash.last',
-	'underscore.last'
+	'underscore.last',
 ];
 
 /** @param {import('eslint').Rule.RuleContext} context */
 function create(context) {
 	const {
 		getLastElementFunctions,
-		checkAllIndexAccess
+		checkAllIndexAccess,
 	} = {
 		getLastElementFunctions: [],
 		checkAllIndexAccess: false,
-		...context.options[0]
+		...context.options[0],
 	};
 	const getLastFunctions = [...getLastElementFunctions, ...lodashLastFunctions];
 	const sourceCode = context.getSourceCode();
@@ -177,7 +177,7 @@ function create(context) {
 
 					const isClosingBraceToken = sourceCode.getTokenAfter(indexNode, isClosingBracketToken);
 					yield fixer.replaceText(isClosingBraceToken, ')');
-				}
+				},
 			};
 		},
 		[stringCharAt](node) {
@@ -200,8 +200,8 @@ function create(context) {
 						}
 
 						yield fixer.replaceText(node.callee.property, 'at');
-					}
-				}]
+					},
+				}],
 			};
 		},
 		[sliceCall](sliceCall) {
@@ -234,7 +234,7 @@ function create(context) {
 
 			const problem = {
 				node: sliceCall.callee.property,
-				messageId: MESSAGE_ID_SLICE
+				messageId: MESSAGE_ID_SLICE,
 			};
 
 			if (safeToFix) {
@@ -261,8 +261,8 @@ function create(context) {
 					let fixed = getParenthesizedText(array, sourceCode);
 
 					if (
-						!isParenthesized(array, sourceCode) &&
-						shouldAddParenthesesToMemberExpressionObject(array, sourceCode)
+						!isParenthesized(array, sourceCode)
+						&& shouldAddParenthesesToMemberExpressionObject(array, sourceCode)
 					) {
 						fixed = `(${fixed})`;
 					}
@@ -275,9 +275,9 @@ function create(context) {
 					}
 
 					return fixer.replaceText(node, fixed);
-				}
+				},
 			};
-		}
+		},
 	};
 }
 
@@ -287,15 +287,15 @@ const schema = [
 		properties: {
 			getLastElementFunctions: {
 				type: 'array',
-				uniqueItems: true
+				uniqueItems: true,
 			},
 			checkAllIndexAccess: {
 				type: 'boolean',
-				default: false
-			}
+				default: false,
+			},
 		},
-		additionalProperties: false
-	}
+		additionalProperties: false,
+	},
 ];
 
 module.exports = {
@@ -303,11 +303,11 @@ module.exports = {
 	meta: {
 		type: 'suggestion',
 		docs: {
-			description: 'Prefer `.at()` method for index access and `String#charAt()`.'
+			description: 'Prefer `.at()` method for index access and `String#charAt()`.',
 		},
 		fixable: 'code',
 		schema,
 		messages,
-		hasSuggestions: true
-	}
+		hasSuggestions: true,
+	},
 };
