@@ -2,8 +2,6 @@ import outdent from 'outdent';
 import {getTester} from './utils/test.mjs';
 
 const {test} = getTester(import.meta);
-const space = ' ';
-const tab = '	';
 
 test.snapshot({
 	valid: [
@@ -16,16 +14,25 @@ test.snapshot({
 		`,
 		';;\'use strict\';',
 		'{\'use strict\';}',
+		'("use strict")',
+		'`use strict`',
 		'({})',
 		outdent`
 			#!/usr/bin/env node
 			console.log('done');
 		`,
+		'false',
+		'("")',
+		'NaN',
+		'undefined',
+		'null',
+		'[]',
+		'(() => {})()',
 	],
 	invalid: [
 		'',
-		space,
-		tab,
+		' ',
+		'\t',
 		'\n',
 		'\r',
 		'\r\n',
@@ -35,13 +42,15 @@ test.snapshot({
 		`,
 		'// comment',
 		'/* comment */',
+		'#!/usr/bin/env node',
 		'\'use asm\';',
 		'\'use strict\';',
+		'"use strict"',
+		'""',
 		';',
 		';;',
 		'{}',
 		'{;;}',
 		'{{}}',
-		'#!/usr/bin/env node',
 	],
 });
