@@ -31,6 +31,7 @@ test.snapshot({
 	],
 	invalid: [
 		'',
+		'\uFEFF',
 		' ',
 		'\t',
 		'\n',
