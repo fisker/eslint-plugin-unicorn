@@ -1,5 +1,5 @@
 import outdent from 'outdent';
-import {getTester} from './utils/test.mjs';
+import {getTester, parsers} from './utils/test.mjs';
 
 const {test} = getTester(import.meta);
 
@@ -53,5 +53,21 @@ test.snapshot({
 		'{}',
 		'{;;}',
 		'{{}}',
+	],
+});
+
+test.snapshot({
+	testerOptions: {
+		parser: parsers.vue,
+	},
+	valid: [
+		'<template></template>',
+		'<style></style>',
+		'<script></script>',
+		'<script>;</script>',
+		'<custom-block></custom-block>',
+	],
+	invalid: [
+		'   ',
 	],
 });
