@@ -15,11 +15,11 @@ You might want to check out [XO](https://github.com/xojs/xo), which includes thi
 npm install --save-dev eslint eslint-plugin-unicorn
 ```
 
-## Usage (`eslint.config.js`)
+## Usage (`eslint.config.{js,mjs,cjs}`)
 
 **Requires ESLint `>=8.23.0`.**
 
-Use a [preset config](#preset-configs-eslintconfigjs) or configure each rule in `eslint.config.js`.
+Use a [preset config](#presets-flat-config) or configure each rule in `eslint.config.js`.
 
 If you don't use the preset, ensure you use the same `languageOptions` config as below.
 
@@ -72,7 +72,7 @@ module.exports = [
 
 ## Usage (legacy: `.eslintrc.*` or `package.json`)
 
-Use a [preset config](#preset-configs-eslintrc-or-packagejson) or configure each rule in `package.json`.
+Use a [preset config](#presets-legacy-config) or configure each rule in `package.json`.
 
 If you don't use the preset, ensure you use the same `env` and `parserOptions` config as below.
 
@@ -230,7 +230,8 @@ If you don't use the preset, ensure you use the same `env` and `parserOptions` c
 
 See [docs/deprecated-rules.md](docs/deprecated-rules.md)
 
-## Preset configs (`eslint.config.js`)
+<a id="presets-flat-config"></a>
+## Preset configs (`eslint.config.{js,mjs,cjs}`)
 
 See the [ESLint docs](https://eslint.org/docs/latest/user-guide/configuring/configuration-files-new) for more information about extending config files.
 
@@ -310,6 +311,7 @@ module.exports = [
 ];
 ```
 
+<a id="presets-legacy-config"></a>
 ## Preset configs (`.eslintrc.*` or `package.json`)
 
 See the [ESLint docs](https://eslint.org/docs/user-guide/configuring/configuration-files#extending-configuration-files) for more information about extending config files.
