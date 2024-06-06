@@ -10,7 +10,8 @@
 		"email": "sindresorhus@gmail.com",
 		"url": "https://sindresorhus.com"
 	},
-	"main": "index.js",
+	"type": "module",
+	"exports": "./index.js",
 	"sideEffects": false,
 	"engines": {
 		"node": ">=18.18"
@@ -141,18 +142,6 @@
 			"func-names": "off"
 		},
 		"overrides": [
-			{
-				"files": [
-					"**/*.js"
-				],
-				"parserOptions": {
-					"sourceType": "script"
-				},
-				"rules": {
-					"strict": "error",
-					"unicorn/prefer-module": "off"
-				}
-			},
 			{
 				"files": [
 					"rules/*.js"

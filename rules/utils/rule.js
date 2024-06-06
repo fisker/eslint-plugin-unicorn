@@ -1,7 +1,6 @@
-'use strict';
-const path = require('node:path');
-const fs = require('node:fs');
-const getDocumentationUrl = require('./get-documentation-url.js');
+import path from 'node:path';
+import path from 'node:fs';
+import getDocumentationUrl from './get-documentation-url.js';
 
 const isIterable = object => typeof object?.[Symbol.iterator] === 'function';
 
@@ -154,8 +153,8 @@ function checkVueTemplate(create, options) {
 }
 
 /** @returns {import('eslint').Rule.RuleModule} */
-function loadRule(ruleId) {
-	const rule = require(`../${ruleId}`);
+async function loadRule(ruleId) {
+	const rule = await import(`../${ruleId}.js`);
 
 	return {
 		meta: {
@@ -172,18 +171,21 @@ function loadRule(ruleId) {
 	};
 }
 
-function loadRules() {
-	return Object.fromEntries(
-		fs.readdirSync(path.join(__dirname, '..'), {withFileTypes: true})
+async function loadRules() {
+	const files = fs.readdirSync(new URL('../', import.meta.url), {withFileTypes: true})
 			.filter(file => file.isFile())
-			.map(file => {
+
+	return Object.fromEntries(
+		await Promise.all(
+			files.map(async file => {
 				const ruleId = path.basename(file.name, '.js');
-				return [ruleId, loadRule(ruleId)];
-			}),
+				return [ruleId, await loadRule(ruleId)];
+			})
+		),
 	);
 }
 
-module.exports = {
+export {
 	loadRule,
 	loadRules,
 	checkVueTemplate,
