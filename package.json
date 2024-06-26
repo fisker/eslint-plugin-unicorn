@@ -1,6 +1,6 @@
 {
 	"name": "eslint-plugin-unicorn",
-	"version": "52.0.0",
+	"version": "54.0.0",
 	"description": "More than 100 powerful ESLint rules",
 	"license": "MIT",
 	"repository": "sindresorhus/eslint-plugin-unicorn",
@@ -11,11 +11,13 @@
 		"url": "https://sindresorhus.com"
 	},
 	"main": "index.js",
+	"types": "index.d.ts",
 	"sideEffects": false,
 	"engines": {
 		"node": ">=18.18"
 	},
 	"scripts": {
+		"bundle-lodash": "echo \"export {defaultsDeep, camelCase, kebabCase, snakeCase, upperFirst, lowerFirst} from 'lodash-es';\" | npx esbuild --bundle --outfile=rules/utils/lodash.js --format=cjs",
 		"create-rule": "node ./scripts/create-rule.mjs && npm run fix:eslint-docs",
 		"fix": "run-p --continue-on-error fix:*",
 		"fix:eslint-docs": "eslint-doc-generator",
@@ -28,13 +30,13 @@
 		"lint:markdown": "markdownlint \"**/*.md\"",
 		"lint:package-json": "npmPkgJsonLint .",
 		"run-rules-on-codebase": "node ./test/run-rules-on-codebase/lint.mjs",
-		"bundle-lodash": "echo \"export {defaultsDeep, camelCase, kebabCase, snakeCase, upperFirst, lowerFirst} from 'lodash-es';\" | npx esbuild --bundle --outfile=rules/utils/lodash.js --format=cjs",
-		"smoke": "eslint-remote-tester --config ./test/smoke/eslint-remote-tester.config.js",
+		"smoke": "eslint-remote-tester --config ./test/smoke/eslint-remote-tester.config.mjs",
 		"test": "npm-run-all --continue-on-error lint test:*",
 		"test:js": "c8 ava"
 	},
 	"files": [
 		"index.js",
+		"index.d.ts",
 		"rules",
 		"configs"
 	],
@@ -71,18 +73,18 @@
 		"@babel/core": "^7.24.5",
 		"@babel/eslint-parser": "^7.24.5",
 		"@lubien/fixture-beta-package": "^1.0.0-beta.1",
-		"@typescript-eslint/parser": "^7.8.0",
+		"@typescript-eslint/parser": "^8.0.0-alpha.12",
 		"ava": "^6.1.3",
 		"c8": "^9.1.0",
 		"chalk": "^5.3.0",
 		"enquirer": "^2.4.1",
 		"eslint": "^9.2.0",
 		"eslint-ava-rule-tester": "^5.0.1",
-		"eslint-doc-generator": "^1.7.0",
+		"eslint-doc-generator": "1.7.0",
 		"eslint-plugin-eslint-plugin": "^6.1.0",
 		"eslint-plugin-internal-rules": "file:./scripts/internal-rules/",
-		"eslint-remote-tester": "^3.0.1",
-		"eslint-remote-tester-repositories": "^1.0.1",
+		"eslint-remote-tester": "^4.0.0",
+		"eslint-remote-tester-repositories": "^2.0.0",
 		"espree": "^10.0.1",
 		"execa": "^8.0.1",
 		"listr": "^0.14.3",
@@ -124,7 +126,9 @@
 			"test/integration/{fixtures,fixtures-local}/**"
 		],
 		"rules": {
+			"unicorn/escape-case": "off",
 			"unicorn/expiring-todo-comments": "off",
+			"unicorn/no-hex-escape": "off",
 			"unicorn/no-null": "error",
 			"unicorn/prefer-array-flat": [
 				"error",
@@ -174,17 +178,5 @@
 				}
 			}
 		]
-	},
-	"npmpackagejsonlint": {
-		"rules": {
-			"prefer-caret-version-devDependencies": [
-				"error",
-				{
-					"exceptions": [
-						"eslint-plugin-internal-rules"
-					]
-				}
-			]
-		}
 	}
 }
