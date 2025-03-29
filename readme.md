@@ -92,7 +92,6 @@ export default [
 | [no-invalid-fetch-options](docs/rules/no-invalid-fetch-options.md)                               | Disallow invalid options in `fetch()` and `new Request()`.                                                                                                                                                        | ✅  |    |    |
 | [no-invalid-remove-event-listener](docs/rules/no-invalid-remove-event-listener.md)               | Prevent calling `EventTarget#removeEventListener()` with the result of an expression.                                                                                                                             | ✅  |    |    |
 | [no-keyword-prefix](docs/rules/no-keyword-prefix.md)                                             | Disallow identifiers starting with `new` or `class`.                                                                                                                                                              |    |    |    |
-| [no-length-as-slice-end](docs/rules/no-length-as-slice-end.md)                                   | Disallow using `.length` as the `end` argument of `{Array,String,TypedArray}#slice()`.                                                                                                                            | ✅  | 🔧 |    |
 | [no-lonely-if](docs/rules/no-lonely-if.md)                                                       | Disallow `if` statements as the only statement in `if` blocks without `else`.                                                                                                                                     | ✅  | 🔧 |    |
 | [no-magic-array-flat-depth](docs/rules/no-magic-array-flat-depth.md)                             | Disallow a magic number as the `depth` argument in `Array#flat(…).`                                                                                                                                               | ✅  |    |    |
 | [no-named-default](docs/rules/no-named-default.md)                                               | Disallow named usage of default import and export.                                                                                                                                                                | ✅  | 🔧 |    |
@@ -109,8 +108,10 @@ export default [
 | [no-thenable](docs/rules/no-thenable.md)                                                         | Disallow `then` property.                                                                                                                                                                                         | ✅  |    |    |
 | [no-this-assignment](docs/rules/no-this-assignment.md)                                           | Disallow assigning `this` to a variable.                                                                                                                                                                          | ✅  |    |    |
 | [no-typeof-undefined](docs/rules/no-typeof-undefined.md)                                         | Disallow comparing `undefined` using `typeof`.                                                                                                                                                                    | ✅  | 🔧 | 💡 |
+| [no-unnecessary-array-splice-count](docs/rules/no-unnecessary-array-splice-count.md)             | Disallow using `.length` or `Infinity` as the `deleteCount` or `skipCount` argument of `Array#{splice,toSpliced}()`.                                                                                              | ✅  | 🔧 |    |
 | [no-unnecessary-await](docs/rules/no-unnecessary-await.md)                                       | Disallow awaiting non-promise values.                                                                                                                                                                             | ✅  | 🔧 |    |
 | [no-unnecessary-polyfills](docs/rules/no-unnecessary-polyfills.md)                               | Enforce the use of built-in methods instead of unnecessary polyfills.                                                                                                                                             | ✅  |    |    |
+| [no-unnecessary-slice-end](docs/rules/no-unnecessary-slice-end.md)                               | Disallow using `.length` or `Infinity` as the `end` argument of `{Array,String,TypedArray}#slice()`.                                                                                                              | ✅  | 🔧 |    |
 | [no-unreadable-array-destructuring](docs/rules/no-unreadable-array-destructuring.md)             | Disallow unreadable array destructuring.                                                                                                                                                                          | ✅  | 🔧 |    |
 | [no-unreadable-iife](docs/rules/no-unreadable-iife.md)                                           | Disallow unreadable IIFEs.                                                                                                                                                                                        | ✅  |    |    |
 | [no-unused-properties](docs/rules/no-unused-properties.md)                                       | Disallow unused object properties.                                                                                                                                                                                |    |    |    |
@@ -186,9 +187,9 @@ export default [
 
 <!-- end auto-generated rules list -->
 
-### Deprecated Rules
+### Deleted and deprecated rules
 
-See [docs/deprecated-rules.md](docs/deprecated-rules.md)
+See [the list](docs/deleted-and-deprecated-rules.md).
 
 ## Preset configs
 
