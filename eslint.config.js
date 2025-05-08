@@ -21,9 +21,9 @@ const config = [
 			'coverage',
 			'.cache-eslint-remote-tester',
 			'eslint-remote-tester-results',
-			'rules/utils/lodash.js',
 			'test/integration/{fixtures,fixtures-local}/**',
 			'workaround-for-eslint-doc-generator',
+			'**/*.ts',
 		],
 	},
 	{
@@ -42,6 +42,7 @@ const config = [
 			'import/order': 'off',
 			'func-names': 'off',
 			'@stylistic/function-paren-newline': 'off',
+			'@stylistic/curly-newline': 'off',
 		},
 	},
 	{
@@ -66,6 +67,9 @@ const config = [
 		},
 	},
 	{
+		files: [
+			'**/*.js',
+		],
 		plugins: {
 			jsdoc,
 		},
