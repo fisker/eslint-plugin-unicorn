@@ -4,6 +4,7 @@ import {createRule} from './utils/rule.js';
 import betterRegex from './better-regex.js';
 import catchErrorName from './catch-error-name.js';
 import consistentAssert from './consistent-assert.js';
+import consistentDateClone from './consistent-date-clone.js';
 import consistentDestructuring from './consistent-destructuring.js';
 import consistentEmptyArraySpread from './consistent-empty-array-spread.js';
 import consistentExistenceIndexCheck from './consistent-existence-index-check.js';
@@ -23,7 +24,6 @@ import noAnonymousDefaultExport from './no-anonymous-default-export.js';
 import noArrayCallbackReference from './no-array-callback-reference.js';
 import noArrayForEach from './no-array-for-each.js';
 import noArrayMethodThisArgument from './no-array-method-this-argument.js';
-import noArrayPushPush from './no-array-push-push.js';
 import noArrayReduce from './no-array-reduce.js';
 import noAwaitExpressionMember from './no-await-expression-member.js';
 import noAwaitInPromiseMethods from './no-await-in-promise-methods.js';
@@ -36,7 +36,6 @@ import noInstanceofBuiltins from './no-instanceof-builtins.js';
 import noInvalidFetchOptions from './no-invalid-fetch-options.js';
 import noInvalidRemoveEventListener from './no-invalid-remove-event-listener.js';
 import noKeywordPrefix from './no-keyword-prefix.js';
-import noLengthAsSliceEnd from './no-length-as-slice-end.js';
 import noLonelyIf from './no-lonely-if.js';
 import noMagicArrayFlatDepth from './no-magic-array-flat-depth.js';
 import noNamedDefault from './no-named-default.js';
@@ -53,8 +52,11 @@ import noStaticOnlyClass from './no-static-only-class.js';
 import noThenable from './no-thenable.js';
 import noThisAssignment from './no-this-assignment.js';
 import noTypeofUndefined from './no-typeof-undefined.js';
+import noUnnecessaryArrayFlatDepth from './no-unnecessary-array-flat-depth.js';
+import noUnnecessaryArraySpliceCount from './no-unnecessary-array-splice-count.js';
 import noUnnecessaryAwait from './no-unnecessary-await.js';
 import noUnnecessaryPolyfills from './no-unnecessary-polyfills.js';
+import noUnnecessarySliceEnd from './no-unnecessary-slice-end.js';
 import noUnreadableArrayDestructuring from './no-unreadable-array-destructuring.js';
 import noUnreadableIife from './no-unreadable-iife.js';
 import noUnusedProperties from './no-unused-properties.js';
@@ -86,6 +88,7 @@ import preferDomNodeTextContent from './prefer-dom-node-text-content.js';
 import preferEventTarget from './prefer-event-target.js';
 import preferExportFrom from './prefer-export-from.js';
 import preferGlobalThis from './prefer-global-this.js';
+import preferImportMetaProperties from './prefer-import-meta-properties.js';
 import preferIncludes from './prefer-includes.js';
 import preferJsonParseBuffer from './prefer-json-parse-buffer.js';
 import preferKeyboardEventKey from './prefer-keyboard-event-key.js';
@@ -107,6 +110,7 @@ import preferReflectApply from './prefer-reflect-apply.js';
 import preferRegexpTest from './prefer-regexp-test.js';
 import preferSetHas from './prefer-set-has.js';
 import preferSetSize from './prefer-set-size.js';
+import preferSingleCall from './prefer-single-call.js';
 import preferSpread from './prefer-spread.js';
 import preferStringRaw from './prefer-string-raw.js';
 import preferStringReplaceAll from './prefer-string-replace-all.js';
@@ -133,6 +137,7 @@ const rules = {
 	'better-regex': createRule(betterRegex, 'better-regex'),
 	'catch-error-name': createRule(catchErrorName, 'catch-error-name'),
 	'consistent-assert': createRule(consistentAssert, 'consistent-assert'),
+	'consistent-date-clone': createRule(consistentDateClone, 'consistent-date-clone'),
 	'consistent-destructuring': createRule(consistentDestructuring, 'consistent-destructuring'),
 	'consistent-empty-array-spread': createRule(consistentEmptyArraySpread, 'consistent-empty-array-spread'),
 	'consistent-existence-index-check': createRule(consistentExistenceIndexCheck, 'consistent-existence-index-check'),
@@ -152,7 +157,6 @@ const rules = {
 	'no-array-callback-reference': createRule(noArrayCallbackReference, 'no-array-callback-reference'),
 	'no-array-for-each': createRule(noArrayForEach, 'no-array-for-each'),
 	'no-array-method-this-argument': createRule(noArrayMethodThisArgument, 'no-array-method-this-argument'),
-	'no-array-push-push': createRule(noArrayPushPush, 'no-array-push-push'),
 	'no-array-reduce': createRule(noArrayReduce, 'no-array-reduce'),
 	'no-await-expression-member': createRule(noAwaitExpressionMember, 'no-await-expression-member'),
 	'no-await-in-promise-methods': createRule(noAwaitInPromiseMethods, 'no-await-in-promise-methods'),
@@ -165,7 +169,6 @@ const rules = {
 	'no-invalid-fetch-options': createRule(noInvalidFetchOptions, 'no-invalid-fetch-options'),
 	'no-invalid-remove-event-listener': createRule(noInvalidRemoveEventListener, 'no-invalid-remove-event-listener'),
 	'no-keyword-prefix': createRule(noKeywordPrefix, 'no-keyword-prefix'),
-	'no-length-as-slice-end': createRule(noLengthAsSliceEnd, 'no-length-as-slice-end'),
 	'no-lonely-if': createRule(noLonelyIf, 'no-lonely-if'),
 	'no-magic-array-flat-depth': createRule(noMagicArrayFlatDepth, 'no-magic-array-flat-depth'),
 	'no-named-default': createRule(noNamedDefault, 'no-named-default'),
@@ -182,8 +185,11 @@ const rules = {
 	'no-thenable': createRule(noThenable, 'no-thenable'),
 	'no-this-assignment': createRule(noThisAssignment, 'no-this-assignment'),
 	'no-typeof-undefined': createRule(noTypeofUndefined, 'no-typeof-undefined'),
+	'no-unnecessary-array-flat-depth': createRule(noUnnecessaryArrayFlatDepth, 'no-unnecessary-array-flat-depth'),
+	'no-unnecessary-array-splice-count': createRule(noUnnecessaryArraySpliceCount, 'no-unnecessary-array-splice-count'),
 	'no-unnecessary-await': createRule(noUnnecessaryAwait, 'no-unnecessary-await'),
 	'no-unnecessary-polyfills': createRule(noUnnecessaryPolyfills, 'no-unnecessary-polyfills'),
+	'no-unnecessary-slice-end': createRule(noUnnecessarySliceEnd, 'no-unnecessary-slice-end'),
 	'no-unreadable-array-destructuring': createRule(noUnreadableArrayDestructuring, 'no-unreadable-array-destructuring'),
 	'no-unreadable-iife': createRule(noUnreadableIife, 'no-unreadable-iife'),
 	'no-unused-properties': createRule(noUnusedProperties, 'no-unused-properties'),
@@ -215,6 +221,7 @@ const rules = {
 	'prefer-event-target': createRule(preferEventTarget, 'prefer-event-target'),
 	'prefer-export-from': createRule(preferExportFrom, 'prefer-export-from'),
 	'prefer-global-this': createRule(preferGlobalThis, 'prefer-global-this'),
+	'prefer-import-meta-properties': createRule(preferImportMetaProperties, 'prefer-import-meta-properties'),
 	'prefer-includes': createRule(preferIncludes, 'prefer-includes'),
 	'prefer-json-parse-buffer': createRule(preferJsonParseBuffer, 'prefer-json-parse-buffer'),
 	'prefer-keyboard-event-key': createRule(preferKeyboardEventKey, 'prefer-keyboard-event-key'),
@@ -236,6 +243,7 @@ const rules = {
 	'prefer-regexp-test': createRule(preferRegexpTest, 'prefer-regexp-test'),
 	'prefer-set-has': createRule(preferSetHas, 'prefer-set-has'),
 	'prefer-set-size': createRule(preferSetSize, 'prefer-set-size'),
+	'prefer-single-call': createRule(preferSingleCall, 'prefer-single-call'),
 	'prefer-spread': createRule(preferSpread, 'prefer-spread'),
 	'prefer-string-raw': createRule(preferStringRaw, 'prefer-string-raw'),
 	'prefer-string-replace-all': createRule(preferStringReplaceAll, 'prefer-string-replace-all'),

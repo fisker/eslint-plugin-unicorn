@@ -1,9 +1,9 @@
 import {fileURLToPath} from 'node:url';
-import packageJson from './package.json' with {type: 'json'};
 import fixSnapshotTest from './fix-snapshot-test.js';
 import noTestOnly from './no-test-only.js';
 import preferNegativeBooleanAttribute from './prefer-negative-boolean-attribute.js';
 import preferFixerRemoveRange from './prefer-fixer-remove-range.js';
+import noRestrictedPropertyAccess from './no-restricted-property-access.js';
 
 const pluginName = 'internal';
 
@@ -20,14 +20,15 @@ const rules = [
 	{id: 'prefer-negative-boolean-attribute', directories: RULES_DIRECTORIES, rule: preferNegativeBooleanAttribute},
 	{id: 'no-test-only', directories: TEST_DIRECTORIES, rule: noTestOnly},
 	{id: 'prefer-fixer-remove-range', directories: RULES_DIRECTORIES, rule: preferFixerRemoveRange},
+	{id: 'no-restricted-property-access', directories: RULES_DIRECTORIES, rule: noRestrictedPropertyAccess},
 ];
 
 const isFileInsideDirectory = (filename, directory) => filename.startsWith(directory);
 
-const internal = {
+const plugin = {
 	meta: {
-		name: packageJson.name,
-		version: packageJson.version,
+		name: pluginName,
+		version: '1.0.0',
 	},
 	rules: Object.fromEntries(
 		rules.map(({id, directories, rule}) => [
@@ -47,18 +48,9 @@ const internal = {
 	),
 };
 
-const configs = {
-	all: {
-		plugins: {
-			internal,
-		},
-		rules: Object.fromEntries(rules.map(({id}) => [`${pluginName}/${id}`, 'error'])),
-	},
+const config = {
+	plugins: {[pluginName]: plugin},
+	rules: Object.fromEntries(rules.map(({id}) => [`${pluginName}/${id}`, 'error'])),
 };
 
-const allConfigs = {
-	...internal,
-	configs,
-};
-
-export default allConfigs;
+export default config;

@@ -47,17 +47,19 @@ const create = context => {
 			|| (node.parent.type === 'Property' && !node.parent.computed && node.parent.key === node)
 			|| (node.parent.type === 'JSXAttribute' && node.parent.value === node)
 			|| (node.parent.type === 'TSEnumMember' && (node.parent.initializer === node || node.parent.id === node))
+			|| (node.parent.type === 'ImportAttribute' && (node.parent.key === node || node.parent.value === node))
 		) {
 			return;
 		}
 
+		const {sourceCode} = context;
 		const {raw} = node;
 		if (
 			raw.at(-2) === BACKSLASH
 			|| !raw.includes(BACKSLASH + BACKSLASH)
 			|| raw.includes('`')
 			|| raw.includes('${')
-			|| node.loc.start.line !== node.loc.end.line
+			|| sourceCode.getLoc(node).start.line !== sourceCode.getLoc(node).end.line
 		) {
 			return;
 		}
@@ -72,7 +74,7 @@ const create = context => {
 			messageId: MESSAGE_ID,
 			* fix(fixer) {
 				yield fixer.replaceText(node, `String.raw\`${unescaped}\``);
-				yield * fixSpaceAroundKeyword(fixer, node, context.sourceCode);
+				yield * fixSpaceAroundKeyword(fixer, node, sourceCode);
 			},
 		};
 	});

@@ -6,22 +6,15 @@ import eslintPluginUnicorn from './index.js';
 
 const config = [
 	eslintPluginUnicorn.configs.all,
+	disableExternalRules([
+		// If external rules needs to be disabled, add the rule name here.
+		'n/no-unsupported-features/es-syntax',
+		'eslint-plugin/require-meta-default-options',
+		'internal/no-restricted-property-access',
+	]),
 	{
 		linterOptions: {
 			reportUnusedDisableDirectives: false,
-		},
-		// Fake rule to allow inline config to disable
-		plugins: {
-			n: {
-				rules: {
-					'no-unsupported-features/es-syntax': {},
-				},
-			},
-			'eslint-plugin': {
-				rules: {
-					'require-meta-default-options': {},
-				},
-			},
 		},
 	},
 	{
@@ -29,7 +22,6 @@ const config = [
 			'coverage',
 			'test/integration/fixtures',
 			'test/integration/fixtures-local',
-			'rules/utils/lodash.js',
 		],
 	},
 	{
@@ -52,8 +44,22 @@ const config = [
 		],
 		rules: {
 			'unicorn/prefer-module': 'off',
+			'unicorn/prefer-import-meta-properties': 'off', // We can enable this rule when we drop support for Node.js v18.
 		},
 	},
 ];
+
+// Create rule to allow inline config to disable
+function disableExternalRules(rules) {
+	const plugins = {};
+	for (const rule of rules) {
+		const [pluginName, ...rest] = rule.split('/');
+		const ruleName = rest.join('/');
+		plugins[pluginName] ??= {rules: {}};
+		plugins[pluginName].rules[ruleName] ??= {};
+	}
+
+	return {plugins};
+}
 
 export default config;

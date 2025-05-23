@@ -91,8 +91,8 @@ const needsParentheses = (sourceCode, function_) => {
 
 /** @param {import('eslint').Rule.RuleFixer} fixer */
 const fixDefaultExpression = (fixer, sourceCode, node) => {
-	const {line} = node.loc.start;
-	const {column} = node.loc.end;
+	const {line} = sourceCode.getLoc(node).start;
+	const {column} = sourceCode.getLoc(node).end;
 	const nodeText = sourceCode.getText(node);
 	const lineText = sourceCode.lines[line - 1];
 	const isOnlyNodeOnLine = lineText.trim() === nodeText;
@@ -106,10 +106,8 @@ const fixDefaultExpression = (fixer, sourceCode, node) => {
 	}
 
 	if (endsWithWhitespace) {
-		return fixer.removeRange([
-			node.range[0],
-			node.range[1] + 1,
-		]);
+		const [start, end] = sourceCode.getRange(node);
+		return fixer.removeRange([start, end + 1]);
 	}
 
 	return fixer.remove(node);
@@ -209,7 +207,6 @@ const config = {
 			description: 'Prefer default parameters over reassignment.',
 			recommended: true,
 		},
-		fixable: 'code',
 		hasSuggestions: true,
 		messages: {
 			[MESSAGE_ID]: 'Prefer default parameters over reassignment.',

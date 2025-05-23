@@ -2,12 +2,10 @@ import fs, {promises as fsAsync} from 'node:fs';
 import path from 'node:path';
 /// import process from 'node:process';
 import test from 'ava';
-import eslintExperimentalApis from 'eslint/use-at-your-own-risk';
+import {ESLint} from 'eslint';
 /// import * as eslintrc from '@eslint/eslintrc';
 /// import globals from 'globals';
 import eslintPluginUnicorn from '../index.js';
-
-const {FlatESLint} = eslintExperimentalApis;
 
 let ruleFiles;
 
@@ -25,10 +23,11 @@ const deprecatedRules = Object.entries(eslintPluginUnicorn.rules)
 	.filter(([, {meta: {deprecated}}]) => deprecated)
 	.map(([ruleId]) => ruleId);
 
-const RULES_WITHOUT_PASS_FAIL_SECTIONS = new Set([
+const RULES_WITHOUT_EXAMPLES_SECTION = new Set([
 	// Doesn't show code samples since it's just focused on filenames.
 	'filename-case',
-	// Intended to not use `pass`/`fail` section in this rule.
+
+	// Intended to not use `Examples` section in this rule.
 	'prefer-modern-math-apis',
 	'prefer-math-min-max',
 	'consistent-existence-index-check',
@@ -38,6 +37,7 @@ const RULES_WITHOUT_PASS_FAIL_SECTIONS = new Set([
 	'no-named-default',
 	'consistent-assert',
 	'no-accessor-recursion',
+	'consistent-date-clone',
 ]);
 
 test('Every rule is defined in index file in alphabetical order', t => {
@@ -75,7 +75,7 @@ test('Every rule is defined in index file in alphabetical order', t => {
 test('validate configuration', async t => {
 	const results = await Promise.all(
 		Object.entries(eslintPluginUnicorn.configs).map(async ([name, config]) => {
-			const eslint = new FlatESLint({
+			const eslint = new ESLint({
 				baseConfig: config,
 				overrideConfigFile: true,
 			});
@@ -108,16 +108,16 @@ test('Every rule has valid meta.type', t => {
 	}
 });
 
-test('Every deprecated rules listed in docs/deprecated-rules.md', async t => {
-	const content = await fsAsync.readFile('docs/deprecated-rules.md', 'utf8');
-	const rulesInMarkdown = new Set(content.match(/(?<=^## ).*?$/gm));
-
+test('Every deprecated rules listed in docs/deleted-and-deprecated-rules.md', async t => {
+	const content = await fsAsync.readFile('docs/deleted-and-deprecated-rules.md', 'utf8');
 	for (const name of deprecatedRules) {
 		const rule = eslintPluginUnicorn.rules[name];
 		t.is(typeof rule.create, 'function', `${name} create is not function`);
 		t.deepEqual(rule.create(), {}, `${name} create should return empty object`);
-		t.true(rule.meta.deprecated, `${name} meta.deprecated should be true`);
-		t.true(rulesInMarkdown.has(name));
+		t.is(typeof rule.meta.deprecated.message, 'string', `${name} meta.deprecated.message should be string`);
+		t.true(Array.isArray(rule.meta.deprecated.replacedBy), `${name} meta.deprecated.replacedBy should be array`);
+		t.true(content.includes(`\n### ${name}\n`));
+		t.false(content.includes(`\n### ~${name}~\n`));
 	}
 });
 
@@ -134,14 +134,18 @@ test('Every rule file has the appropriate contents', t => {
 test('Every rule has a doc with the appropriate content', t => {
 	for (const ruleFile of ruleFiles) {
 		const ruleName = path.basename(ruleFile, '.js');
-		const documentPath = path.join('docs/rules', `${ruleName}.md`);
-		const documentContents = fs.readFileSync(documentPath, 'utf8');
 
-		// Check for examples.
-		if (!RULES_WITHOUT_PASS_FAIL_SECTIONS.has(ruleName)) {
-			t.true(documentContents.includes('## Pass'), `${ruleName} includes '## Pass' examples section`);
-			t.true(documentContents.includes('## Fail'), `${ruleName} includes '## Fail' examples section`);
+		if (RULES_WITHOUT_EXAMPLES_SECTION.has(ruleName)) {
+			continue;
 		}
+
+		/// const documentPath = path.join('docs/rules', `${ruleName}.md`);
+		/// const documentContents = fs.readFileSync(documentPath, 'utf8');
+
+		// TODO: Disabled until https://github.com/sindresorhus/eslint-plugin-unicorn/issues/2530 is done.
+		// Check for examples.
+		// t.true(documentContents.includes('## Examples'), `${ruleName} includes '## Examples' examples section`);
+		t.pass();
 	}
 });
 

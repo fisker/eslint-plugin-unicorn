@@ -4,8 +4,19 @@ import rules from './rules/index.js';
 import packageJson from './package.json' with {type: 'json'};
 
 const deprecatedRules = createDeprecatedRules({
-	// {ruleId: ReplacementRuleId | ReplacementRuleId[]}, if no replacement, use `{ruleId: []}`
-	'no-instanceof-array': 'unicorn/no-instanceof-builtins',
+	// {ruleId: {message: string, replacedBy: string[]}}
+	'no-instanceof-array': {
+		message: 'Replaced by `unicorn/no-instanceof-builtins` which covers more cases.',
+		replacedBy: ['unicorn/no-instanceof-builtins'],
+	},
+	'no-length-as-slice-end': {
+		message: 'Replaced by `unicorn/no-unnecessary-slice-end` which covers more cases.',
+		replacedBy: ['unicorn/no-unnecessary-slice-end'],
+	},
+	'no-array-push-push': {
+		message: 'Replaced by `unicorn/prefer-single-call` which covers more cases.',
+		replacedBy: ['unicorn/prefer-single-call'],
+	},
 });
 
 const externalRules = {

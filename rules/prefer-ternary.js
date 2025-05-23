@@ -34,6 +34,7 @@ function getNodeBody(node) {
 	return node;
 }
 
+// eslint-disable-next-line internal/no-restricted-property-access -- Need fix
 const isSingleLineNode = node => node.loc.start.line === node.loc.end.line;
 
 /** @param {import('eslint').Rule.RuleContext} context */
@@ -250,7 +251,7 @@ const create = context => {
 				yield fixer.replaceText(node, fixed);
 
 				if (generateNewVariables) {
-					yield * extendFixRange(fixer, sourceCode.ast.range);
+					yield * extendFixRange(fixer, sourceCode.getRange(sourceCode.ast));
 				}
 			};
 

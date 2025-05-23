@@ -1,8 +1,8 @@
 import path from 'node:path';
-import {readPackageUpSync} from 'read-package-up';
 import coreJsCompat from 'core-js-compat';
-import {camelCase} from './utils/lodash.js';
+import {camelCase} from 'change-case';
 import isStaticRequire from './ast/is-static-require.js';
+import {readPackageJson} from './shared/package-json.js';
 
 const {data: compatData, entries: coreJsEntries} = coreJsCompat;
 
@@ -57,19 +57,14 @@ function getTargets(options, dirname) {
 		return options.targets;
 	}
 
-	/** @type {readPkgUp.ReadResult | undefined} */
-	let packageResult;
-	try {
-		// It can fail if, for example, the package.json file has comments.
-		packageResult = readPackageUpSync({normalize: false, cwd: dirname});
-	} catch {}
+	const packageJsonResult = readPackageJson(dirname);
 
-	if (!packageResult) {
+	if (!packageJsonResult) {
 		return;
 	}
 
-	const {browserlist, engines} = packageResult.packageJson;
-	return browserlist ?? engines;
+	const {browserslist, engines} = packageJsonResult.packageJson;
+	return browserslist ?? engines;
 }
 
 function create(context) {
@@ -127,10 +122,9 @@ function create(context) {
 			const polyfill = polyfills.find(({pattern}) => pattern.test(importedModule));
 			if (polyfill) {
 				const [, namespace, method = ''] = polyfill.feature.split('.');
-				const [, features] = Object.entries(coreJsEntries).find(
-					entry => entry[0] === `core-js/full/${namespace}${method && '/'}${method}`,
-				);
-				if (checkFeatures(features)) {
+				const features = coreJsEntries[`core-js/full/${namespace}${method && '/'}${method}`];
+
+				if (features && checkFeatures(features)) {
 					return {node, messageId: MESSAGE_ID_POLYFILL};
 				}
 			}

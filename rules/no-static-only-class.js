@@ -152,8 +152,8 @@ function switchClassToObject(node, sourceCode) {
 			if (
 				type === 'ClassExpression'
 				&& parent.type === 'ReturnStatement'
-				&& body.loc.start.line !== parent.loc.start.line
-				&& sourceCode.text.slice(classToken.range[1], body.range[0]).trim()
+				&& sourceCode.getLoc(body).start.line !== sourceCode.getLoc(parent).start.line
+				&& sourceCode.text.slice(sourceCode.getRange(classToken)[1], sourceCode.getRange(body)[0]).trim()
 			) {
 				yield fixer.replaceText(classToken, '{');
 

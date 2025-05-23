@@ -1,6 +1,6 @@
 # Prefer `.includes()` over `.indexOf()`, `.lastIndexOf()`, and `Array#some()` when checking for existence or non-existence
 
-💼 This rule is enabled in the ✅ `recommended` [config](https://github.com/sindresorhus/eslint-plugin-unicorn#preset-configs-eslintconfigjs).
+💼 This rule is enabled in the ✅ `recommended` [config](https://github.com/sindresorhus/eslint-plugin-unicorn#recommended-config).
 
 🔧💡 This rule is automatically fixable by the [`--fix` CLI option](https://eslint.org/docs/latest/user-guide/command-line-interface#--fix) and manually fixable by [editor suggestions](https://eslint.org/docs/latest/use/core-concepts#rule-suggestions).
 
@@ -14,10 +14,6 @@ All built-ins have `.includes()` in addition to `.indexOf()` and `.lastIndexOf()
 This rule is fixable, unless the search expression in `Array#some()` has side effects.
 
 ## Fail
-
-```js
-array.indexOf('foo') !== -1;
-```
 
 ```js
 array.indexOf('foo') !== -1;

@@ -24,7 +24,13 @@ test.snapshot({
 				const fs = await import(\`fs\`);
 			}
 		`,
+		'import "punycode";', // Deprecated
+		'import "node:punycode";', // Deprecated
 		'import "punycode/";',
+		'import "fs/";',
+		// `test` is not a builtin module, `node:test` is
+		'import "test";',
+		'import "node:test";',
 		// https://bun.sh/docs/runtime/bun-apis
 		'import "bun";',
 		'import "bun:jsc";',
@@ -83,6 +89,29 @@ test.snapshot({
 	invalid: [
 		'const {promises} = require("fs")',
 		'const fs = require(\'fs/promises\')',
+	],
+});
+
+// `process.getBuiltinModule`
+test.snapshot({
+	valid: [
+		'const fs = process.getBuiltinModule("node:fs")',
+		'const fs = process.getBuiltinModule?.("fs")',
+		'const fs = process?.getBuiltinModule("fs")',
+		'const fs = process.notGetBuiltinModule("fs")',
+		'const fs = notProcess.getBuiltinModule("fs")',
+		'const fs = process.getBuiltinModule("fs", extra)',
+		'const fs = process.getBuiltinModule(...["fs"])',
+		'const fs = process.getBuiltinModule()',
+		'const fs = process.getBuiltinModule("unicorn")',
+		// Not checking this to avoid false positive
+		outdent`
+			import {getBuiltinModule} from 'node:process';
+			const fs = getBuiltinModule("fs");
+		`,
+	],
+	invalid: [
+		'const fs = process.getBuiltinModule("fs")',
 	],
 });
 

@@ -2,13 +2,13 @@ import globals from 'globals';
 import xo from 'eslint-config-xo';
 import eslintPlugin from 'eslint-plugin-eslint-plugin';
 import jsdoc from 'eslint-plugin-jsdoc';
-import internal from './scripts/internal-rules/index.js';
+import internalRules from './scripts/internal-rules/index.js';
 import unicorn from './index.js';
 
 const config = [
 	...xo,
 	unicorn.configs.recommended,
-	internal.configs.all,
+	internalRules,
 	{
 		languageOptions: {
 			globals: {
@@ -21,9 +21,9 @@ const config = [
 			'coverage',
 			'.cache-eslint-remote-tester',
 			'eslint-remote-tester-results',
-			'rules/utils/lodash.js',
 			'test/integration/{fixtures,fixtures-local}/**',
 			'workaround-for-eslint-doc-generator',
+			'**/*.ts',
 		],
 	},
 	{
@@ -42,6 +42,7 @@ const config = [
 			'import/order': 'off',
 			'func-names': 'off',
 			'@stylistic/function-paren-newline': 'off',
+			'@stylistic/curly-newline': 'off',
 		},
 	},
 	{
@@ -66,6 +67,9 @@ const config = [
 		},
 	},
 	{
+		files: [
+			'**/*.js',
+		],
 		plugins: {
 			jsdoc,
 		},

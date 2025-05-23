@@ -1,12 +1,16 @@
 import isBuiltinModule from 'is-builtin-module';
-import isStaticRequire from './ast/is-static-require.js';
+import {
+	isStaticRequire,
+	isMethodCall,
+} from './ast/index.js';
 
 const MESSAGE_ID = 'prefer-node-protocol';
 const messages = {
 	[MESSAGE_ID]: 'Prefer `node:{{moduleName}}` over `{{moduleName}}`.',
 };
+const NODE_PROTOCOL = 'node:';
 
-const create = () => ({
+const create = context => ({
 	Literal(node) {
 		if (!(
 			(
@@ -18,7 +22,16 @@ const create = () => ({
 				&& node.parent.source === node
 			)
 			|| (
-				isStaticRequire(node.parent)
+				(
+					isMethodCall(node.parent, {
+						object: 'process',
+						method: 'getBuiltinModule',
+						argumentsLength: 1,
+						optionalCall: false,
+						optionalMember: false,
+					})
+					|| isStaticRequire(node.parent)
+				)
 				&& node.parent.arguments[0] === node
 			)
 		)) {
@@ -27,22 +40,22 @@ const create = () => ({
 
 		const {value} = node;
 
-		if (
-			typeof value !== 'string'
-			|| value.startsWith('node:')
-			|| /^bun(?::|$)/.test(value)
-			|| !isBuiltinModule(value)
-		) {
+		if (!(
+			typeof value === 'string'
+			&& !value.startsWith(NODE_PROTOCOL)
+			&& isBuiltinModule(value)
+			&& isBuiltinModule(`${NODE_PROTOCOL}${value}`)
+		)) {
 			return;
 		}
 
-		const insertPosition = node.range[0] + 1; // After quote
+		const insertPosition = context.sourceCode.getRange(node)[0] + 1; // After quote
 		return {
 			node,
 			messageId: MESSAGE_ID,
 			data: {moduleName: value},
 			/** @param {import('eslint').Rule.RuleFixer} fixer */
-			fix: fixer => fixer.insertTextAfterRange([insertPosition, insertPosition], 'node:'),
+			fix: fixer => fixer.insertTextAfterRange([insertPosition, insertPosition], NODE_PROTOCOL),
 		};
 	},
 });

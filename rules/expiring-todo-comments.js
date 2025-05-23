@@ -1,9 +1,9 @@
 import path from 'node:path';
 import {isRegExp} from 'node:util/types';
-import {readPackageUpSync} from 'read-package-up';
 import semver from 'semver';
 import * as ci from 'ci-info';
 import getBuiltinRule from './utils/get-builtin-rule.js';
+import {readPackageJson} from './shared/package-json.js';
 
 const baseRule = getBuiltinRule('no-warning-comments');
 
@@ -50,20 +50,9 @@ const messages = {
 
 /** @param {string} dirname */
 function getPackageHelpers(dirname) {
-	// We don't need to normalize the package.json data, because we are only using 2 properties and those 2 properties
-	// aren't validated by the normalization. But when this plugin is used in a monorepo, the name field in the
-	// package.json can be invalid and would make this plugin throw an error. See also #1871
-	/** @type {readPkgUp.ReadResult | undefined} */
-	let packageResult;
-	try {
-		packageResult = readPackageUpSync({normalize: false, cwd: dirname});
-	} catch {
-		// This can happen if package.json files have comments in them etc.
-		packageResult = undefined;
-	}
-
-	const hasPackage = Boolean(packageResult);
-	const packageJson = packageResult ? packageResult.packageJson : {};
+	const packageJsonResult = readPackageJson(dirname);
+	const packageJson = packageJsonResult?.packageJson ?? {};
+	const hasPackage = Boolean(packageJsonResult);
 
 	const packageDependencies = {
 		...packageJson.dependencies,
@@ -187,7 +176,7 @@ function getPackageHelpers(dirname) {
 	}
 
 	return {
-		packageResult,
+		packageResult: packageJsonResult,
 		hasPackage,
 		packageJson,
 		packageDependencies,
@@ -354,7 +343,7 @@ const create = context => {
 		if (dates.length > 1) {
 			uses++;
 			context.report({
-				loc: comment.loc,
+				loc: sourceCode.getLoc(comment),
 				messageId: MESSAGE_ID_AVOID_MULTIPLE_DATES,
 				data: {
 					expirationDates: dates.join(', '),
@@ -368,7 +357,7 @@ const create = context => {
 			const shouldIgnore = options.ignoreDatesOnPullRequests && ci.isPR;
 			if (!shouldIgnore && reachedDate(expirationDate, options.date)) {
 				context.report({
-					loc: comment.loc,
+					loc: sourceCode.getLoc(comment),
 					messageId: MESSAGE_ID_EXPIRED_TODO,
 					data: {
 						expirationDate,
@@ -381,7 +370,7 @@ const create = context => {
 		if (packageVersions.length > 1) {
 			uses++;
 			context.report({
-				loc: comment.loc,
+				loc: sourceCode.getLoc(comment),
 				messageId: MESSAGE_ID_AVOID_MULTIPLE_PACKAGE_VERSIONS,
 				data: {
 					versions: packageVersions
@@ -400,7 +389,7 @@ const create = context => {
 			const compare = semverComparisonForOperator(condition);
 			if (packageVersion && compare(packageVersion, decidedPackageVersion)) {
 				context.report({
-					loc: comment.loc,
+					loc: sourceCode.getLoc(comment),
 					messageId: MESSAGE_ID_REACHED_PACKAGE_VERSION,
 					data: {
 						comparison: `${condition}${version}`,
@@ -426,7 +415,7 @@ const create = context => {
 
 				if (trigger) {
 					context.report({
-						loc: comment.loc,
+						loc: sourceCode.getLoc(comment),
 						messageId,
 						data: {
 							package: dependency.name,
@@ -452,7 +441,7 @@ const create = context => {
 
 			if (compare(targetPackageVersion, todoVersion)) {
 				context.report({
-					loc: comment.loc,
+					loc: sourceCode.getLoc(comment),
 					messageId: MESSAGE_ID_VERSION_MATCHES,
 					data: {
 						comparison: `${dependency.name} ${dependency.condition} ${dependency.version}`,
@@ -484,7 +473,7 @@ const create = context => {
 
 			if (compare(targetPackageEngineVersion, todoEngine)) {
 				context.report({
-					loc: comment.loc,
+					loc: sourceCode.getLoc(comment),
 					messageId: MESSAGE_ID_ENGINE_MATCHES,
 					data: {
 						comparison: `node${engine.condition}${engine.version}`,
@@ -508,7 +497,7 @@ const create = context => {
 				if (parseArgument(testString).type !== 'unknowns') {
 					uses++;
 					context.report({
-						loc: comment.loc,
+						loc: sourceCode.getLoc(comment),
 						messageId: MESSAGE_ID_MISSING_AT_SYMBOL,
 						data: {
 							original: unknown,
@@ -525,7 +514,7 @@ const create = context => {
 			if (parseArgument(withoutWhitespace).type !== 'unknowns') {
 				uses++;
 				context.report({
-					loc: comment.loc,
+					loc: sourceCode.getLoc(comment),
 					messageId: MESSAGE_ID_REMOVE_WHITESPACE,
 					data: {
 						original: unknown,

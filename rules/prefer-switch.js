@@ -98,6 +98,7 @@ const getBreakTarget = node => {
 };
 
 const isNodeInsideNode = (inner, outer) =>
+	// eslint-disable-next-line internal/no-restricted-property-access
 	inner.range[0] >= outer.range[0] && inner.range[1] <= outer.range[1];
 function hasBreakInside(breakStatements, node) {
 	for (const breakStatement of breakStatements) {
@@ -223,15 +224,18 @@ function fix({discriminant, ifStatements}, sourceCode, options) {
 		yield fixer.insertTextAfter(firstStatement, `\n${indent}}`);
 
 		for (const {statement, compareExpressions} of ifStatements) {
-			const {consequent, alternate, range} = statement;
-			const headRange = [range[0], consequent.range[0]];
+			const {consequent, alternate} = statement;
 
 			if (alternate) {
-				const [, start] = consequent.range;
-				const [end] = alternate.range;
+				const [, start] = sourceCode.getRange(consequent);
+				const [end] = sourceCode.getRange(alternate);
 				yield fixer.removeRange([start, end]);
 			}
 
+			const headRange = [
+				sourceCode.getRange(statement)[0],
+				sourceCode.getRange(consequent)[0],
+			];
 			yield fixer.removeRange(headRange);
 			for (const {left, right} of compareExpressions) {
 				const node = isSame(left, discriminant) ? right : left;
@@ -287,8 +291,8 @@ const create = context => {
 
 				const problem = {
 					loc: {
-						start: node.loc.start,
-						end: node.consequent.loc.start,
+						start: sourceCode.getLoc(node).start,
+						end: sourceCode.getLoc(node.consequent).start,
 					},
 					messageId: MESSAGE_ID,
 				};
