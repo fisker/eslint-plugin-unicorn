@@ -39,3 +39,15 @@ await fs.readFile(file, 'ascii');
 ```js
 const string = buffer.toString('utf8');
 ```
+
+## Options
+
+### withDash
+
+Type: `boolean`\
+Default: `false`
+
+- `false` (default)
+  - Prefer `utf8` without a dash (Node.js style)
+- `true`
+  - Prefer `utf-8` with a dash (WHATWG standard, required for HTML)
