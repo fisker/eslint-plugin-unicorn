@@ -1,5 +1,5 @@
-// Replace `StringLiteral` or `TemplateLiteral` node with raw text
-const replaceStringRaw = (node, raw, context, fixer) =>
+// Replace `StringLiteral` node with raw text
+const replaceStringLiteralRaw = (node, raw, context, fixer) =>
 	fixer.replaceTextRange(
 		// Ignore quotes and backticks
 		[
@@ -9,4 +9,4 @@ const replaceStringRaw = (node, raw, context, fixer) =>
 		raw,
 	);
 
-export default replaceStringRaw;
+export default replaceStringLiteralRaw;
