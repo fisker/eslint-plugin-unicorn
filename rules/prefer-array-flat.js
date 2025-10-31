@@ -157,7 +157,7 @@ const lodashFlattenFunctions = [
 	'underscore.flatten',
 ];
 
-function fix(node, array, context, shouldSwitchToArray, optional) {
+function fix(node, array, context, {shouldSwitchToArray, optional}) {
 	if (typeof shouldSwitchToArray === 'function') {
 		shouldSwitchToArray = shouldSwitchToArray(node);
 	}
@@ -237,7 +237,7 @@ function create(context) {
 				sourceCode.getCommentsInside(node).length
 				=== sourceCode.getCommentsInside(array).length
 			) {
-				problem.fix = fix(node, array, context, shouldSwitchToArray, optional);
+				problem.fix = fix(node, array, context, {shouldSwitchToArray, optional});
 			}
 
 			yield problem;

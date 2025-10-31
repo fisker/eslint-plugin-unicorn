@@ -113,7 +113,7 @@ const create = context => {
 	};
 
 	const removeNodeAndLeadingSpace = (node, fixer) =>
-		replaceNodeOrTokenAndSpacesBefore(node, '', fixer, context);
+		replaceNodeOrTokenAndSpacesBefore(node, '', fixer, {context});
 
 	// `return undefined`
 	context.on('Identifier', node => {
@@ -155,7 +155,7 @@ const create = context => {
 			) {
 				return getProblem(
 					node,
-					fixer => replaceNodeOrTokenAndSpacesBefore(node, ' {}', fixer, context),
+					fixer => replaceNodeOrTokenAndSpacesBefore(node, ' {}', fixer, {context}),
 					/* CheckFunctionReturnType */ true,
 				);
 			}

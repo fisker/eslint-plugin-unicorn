@@ -159,7 +159,7 @@ const create = context => {
 				for (const expression of plusExpressions) {
 					const plusToken = sourceCode.getTokenAfter(expression.left, token => token.type === 'Punctuator' && token.value === '+');
 
-					yield replaceNodeOrTokenAndSpacesBefore(plusToken, ',', fixer, context);
+					yield replaceNodeOrTokenAndSpacesBefore(plusToken, ',', fixer, {context});
 					yield removeParentheses(expression, fixer, context);
 				}
 
