@@ -8,16 +8,15 @@ import {getParentheses} from '../utils/index.js';
 @param {ESTree.Node | ESTree.Token} nodeOrToken
 @param {string} replacement
 @param {ESLint.Rule.RuleFixer} fixer
-@param {object} options
-@param {ESLint.Rule.RuleContext} options.context - The ESLint rule context object.
-@param {ESLint.SourceCode} [options.tokenStore]
+@param {ESLint.Rule.RuleContext} context - The ESLint rule context object.
+@param {ESLint.SourceCode} [tokenStore]
 @returns {ESLint.Rule.ReportFixer}
 */
-export default function * replaceNodeOrTokenAndSpacesBefore(nodeOrToken, replacement, fixer, {context, tokenStore}) {
+export default function * replaceNodeOrTokenAndSpacesBefore(nodeOrToken, replacement, fixer, context, tokenStore) {
 	const tokens = getParentheses(nodeOrToken, tokenStore ? {sourceCode: tokenStore} : context);
 
 	for (const token of tokens) {
-		yield replaceNodeOrTokenAndSpacesBefore(token, '', fixer, {context, tokenStore});
+		yield replaceNodeOrTokenAndSpacesBefore(token, '', fixer, context, tokenStore);
 	}
 
 	const {sourceCode} = context;

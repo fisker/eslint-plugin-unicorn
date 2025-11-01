@@ -67,8 +67,8 @@ const replaceWithFunctionCall = (node, context, functionName) => function * (fix
 	yield fixer.insertTextBeforeRange(range, functionName + '(');
 	yield fixer.insertTextAfterRange(range, ')');
 
-	yield replaceNodeOrTokenAndSpacesBefore(instanceofToken, '', fixer, {context, tokenStore});
-	yield replaceNodeOrTokenAndSpacesBefore(right, '', fixer, {context, tokenStore});
+	yield replaceNodeOrTokenAndSpacesBefore(instanceofToken, '', fixer, context, tokenStore);
+	yield replaceNodeOrTokenAndSpacesBefore(right, '', fixer, context, tokenStore);
 };
 
 const replaceWithTypeOfExpression = (node, context) => function * (fixer) {
