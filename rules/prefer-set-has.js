@@ -124,6 +124,55 @@ const create = context => {
 			return;
 		}
 
+		// Exclude if variable is exported - converting to Set would break the API
+		// Export specifiers may not be tracked as regular references by ESLint's scope analysis
+		// so we need to explicitly check for export patterns
+		if (variable.references.some(reference => {
+			const {identifier} = reference;
+			const {parent} = identifier;
+			
+			// `export {foo}`, `export {foo as bar}`
+			if (
+				parent.type === 'ExportSpecifier'
+				&& parent.local === identifier
+			) {
+				return true;
+			}
+			
+			// `export default foo`
+			if (
+				parent.type === 'ExportDefaultDeclaration'
+				&& parent.declaration === identifier
+			) {
+				return true;
+			}
+			
+			// `module.exports = foo` or `exports = foo`
+			if (
+				parent.type === 'AssignmentExpression'
+				&& parent.right === identifier
+				&& (
+					(
+						parent.left.type === 'MemberExpression'
+						&& parent.left.object.type === 'Identifier'
+						&& parent.left.object.name === 'module'
+						&& parent.left.property.type === 'Identifier'
+						&& parent.left.property.name === 'exports'
+					)
+					|| (
+						parent.left.type === 'Identifier'
+						&& parent.left.name === 'exports'
+					)
+				)
+			) {
+				return true;
+			}
+			
+			return false;
+		})) {
+			return;
+		}
+
 		if (
 			identifiers.length === 1
 			&& identifiers.every(identifier => !isMultipleCall(identifier, node))
