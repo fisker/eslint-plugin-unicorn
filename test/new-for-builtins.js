@@ -278,3 +278,13 @@ test.snapshot({
 		'const foo = Date(bar);',
 	],
 });
+
+// Add test cases for sequence expressions and trailing commas
+test.snapshot({
+valid: [],
+invalid: [
+'const foo = Date((a, b));',
+'const foo = Date(a, b,);',
+'const foo = Date((a, b), c);',
+],
+});
