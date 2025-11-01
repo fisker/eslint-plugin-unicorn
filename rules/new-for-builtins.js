@@ -1,5 +1,6 @@
 import {GlobalReferenceTracker} from './utils/global-reference-tracker.js';
 import * as builtins from './utils/builtins.js';
+import {getCallExpressionArgumentsText} from './utils/index.js';
 import {
 	switchCallExpressionToNewExpression,
 	switchNewExpressionToCallExpression,
@@ -32,7 +33,8 @@ function enforceNewExpression({node, path: [name]}, context) {
 	// https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Date/Date#return_value
 	if (name === 'Date') {
 		function * fix(fixer) {
-			yield fixer.replaceText(node, 'String(new Date())');
+			const argumentsText = getCallExpressionArgumentsText(context, node);
+			yield fixer.replaceText(node, `String(new Date(${argumentsText}))`);
 			yield fixSpaceAroundKeyword(fixer, node, context);
 		}
 
